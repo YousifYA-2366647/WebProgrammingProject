@@ -1,0 +1,11 @@
+paginas: 
+	• login pagina
+	• gegevensinvoer pagina
+	• analyse pagina
+	• instellingen pagina
+gegevens:
+	-gebruikers
+	-activiteiten
+	-instellingen: 
+		o relatie
+		o notificaties
