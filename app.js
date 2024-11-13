@@ -23,7 +23,15 @@ app.use((request, response, next) => {
 });
 
 app.get("/", (request, response) => {
-  response.send("Hello World!!");
+  response.redirect('/login.html')
+});
+
+app.get("/login", (request, response) => {
+  response.redirect('/login.html')
+});
+
+app.get("/create-account", (request, response) => {
+  response.redirect('/create-account.html')
 });
 
 // Middleware for unknown routes
