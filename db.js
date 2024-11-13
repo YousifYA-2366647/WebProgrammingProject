@@ -2,6 +2,8 @@ import Database from "better-sqlite3";
 
 const db = new Database("database.db", { verbose: console.log });
 
+export { db };
+
 export function InitializeDatabase() {
   db.pragma("journal_mode = WAL;");
   db.pragma("busy_timeout = 5000;");
@@ -10,7 +12,25 @@ export function InitializeDatabase() {
   db.pragma("foreign_keys = true;");
   db.pragma("temp_store = memory;");
 
-  db.prepare("CREATE TABLE IF NOT EXISTS users (name TEXT) STRICT").run();
+  prepareUsers();
+
+  db.prepare(`CREATE TABLE IF NOT EXISTS time_entries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER, 
+    start_time TEXT, 
+    end_time TEXT, 
+    note TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+    )`).run();
+}
+
+
+function prepareUsers() {
+  db.prepare(`CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL
+    ) STRICT`).run();
 
   const exampleUsers = [
     { name: "Peter" },
@@ -18,8 +38,13 @@ export function InitializeDatabase() {
     { name: "Joris" },
     { name: "Mike" },
   ];
-  const insertUser = db.prepare("INSERT INTO users (name) VALUES (?)");
+
+  const findUser = db.prepare("SELECT id FROM users WHERE name = ?");
+  const insertUser = db.prepare("INSERT INTO users (name, password) VALUES (?, ?)");
+  let i = "a";
   exampleUsers.forEach((user) => {
-    insertUser.run(user.name);
+    if (!findUser.get(user.name)) {
+      insertUser.run(user.name, i);
+    }
   });
 }
