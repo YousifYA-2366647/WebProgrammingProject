@@ -7,9 +7,11 @@
     "db": "node db.js"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "better-sqlite3": "^11.3.0",
     "ejs": "^3.1.10",
     "express": "^4.21.0",
-    "express-validator": "^7.2.0"
+    "express-validator": "^7.2.0",
+    "jsonwebtoken": "^9.0.2"
   }
 }
