@@ -39,20 +39,20 @@ app.get("/create-account", (request, response) => {
 
 // register
 app.post("/register", express.json(), async (req, res) => {
-  const {username, password} = req.body;
+  const {username, email, password} = req.body;
 
-  if (!username || !password) {
-    return res.status(400).json({error: "Username and password are required."});
+  if (!username || !password || !email) {
+    return res.status(400).json({error: "Username, email and password are required."});
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    const insertUser = db.prepare("INSERT INTO users (name, password) VALUES (?, ?)")
-    const result = insertUser.run(username, hashedPassword);
+    const insertUser = db.prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)")
+    const result = insertUser.run(username, email, hashedPassword);
     res.status(201).json({id: result.lastInsertRowid});
   } catch (error) {
-    res.status(400).json({error: "Username already exists."});
+    res.status(400).json({error: "User with this email already exists."});
   }
 })
 
@@ -75,10 +75,10 @@ app.get("/users", (req, res) => {
 })
 
 app.post("/login", express.json(), async (req, res) => {
-  const username = req.body.username;
+  const email = req.body.email;
   const password = req.body.password;
 
-  const user = db.prepare("SELECT * FROM users WHERE name = ?").get(username);
+  const user = db.prepare("SELECT * FROM users WHERE email = ?").get(email);
 
   if (!user) {
     return res.status(400).json({error: "No users found."});

@@ -28,7 +28,8 @@ export function InitializeDatabase() {
 function prepareUsers() {
   db.prepare(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT UNIQUE NOT NULL,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL
     ) STRICT`).run();
 
@@ -40,11 +41,12 @@ function prepareUsers() {
   ];
 
   const findUser = db.prepare("SELECT id FROM users WHERE name = ?");
-  const insertUser = db.prepare("INSERT INTO users (name, password) VALUES (?, ?)");
+  const insertUser = db.prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
   let i = "a";
   exampleUsers.forEach((user) => {
     if (!findUser.get(user.name)) {
-      insertUser.run(user.name, i);
+      const email = user.name + "@gmail.com";
+      insertUser.run(user.name, email, i);
     }
   });
 }
