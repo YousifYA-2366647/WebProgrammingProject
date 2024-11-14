@@ -2,10 +2,15 @@ import express from "express";
 import { InitializeDatabase, db } from "./db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import path from 'path';
 
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
 const tokenKey = "MaeuM";
+
+// post request kunnen lezen
+app.use(express.json());
+app.use(express.urlencoded());
 
 // set the view engine to ejs
 app.set("view engine", "ejs");
@@ -26,23 +31,23 @@ app.use((request, response, next) => {
 });
 
 app.get("/", (request, response) => {
-  response.redirect('/login.html')
+  response.redirect('/login');
 });
 
 app.get("/login", (request, response) => {
-  response.redirect('/login.html')
+  response.sendFile(path.join(process.cwd(), "public/login.html"));
 });
 
-app.get("/create-account", (request, response) => {
-  response.redirect('/create-account.html')
+app.get("/register", (request, response) => {
+  response.sendFile(path.join(process.cwd(), "public/register.html"));
 });
 
 // register
 app.post("/register", express.json(), async (req, res) => {
-  const {username, email, password} = req.body;
+  const { username, email, password } = req.body;
 
   if (!username || !password || !email) {
-    return res.status(400).json({error: "Username, email and password are required."});
+    return res.status(400).json({ error: "Username, email and password are required." });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -50,9 +55,9 @@ app.post("/register", express.json(), async (req, res) => {
   try {
     const insertUser = db.prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)")
     const result = insertUser.run(username, email, hashedPassword);
-    res.status(201).json({id: result.lastInsertRowid});
+    res.status(201).json({ id: result.lastInsertRowid });
   } catch (error) {
-    res.status(400).json({error: "User with this email already exists."});
+    res.status(400).json({ error: "User with this email already exists." });
   }
 })
 
@@ -81,19 +86,19 @@ app.post("/login", express.json(), async (req, res) => {
   const user = db.prepare("SELECT * FROM users WHERE email = ?").get(email);
 
   if (!user) {
-    return res.status(400).json({error: "No users found."});
+    return res.status(400).json({ error: "No users found." });
   }
   if (password != user.password) {
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
       console.log(password + " " + user.password)
-      return res.status(400).json({error: "Wrong Password."});
+      return res.status(400).json({ error: "Wrong Password." });
     }
   }
 
-  const token = jwt.sign({userId: user.id}, tokenKey, {expiresIn: "3h"});
-  res.status(200).json({ message: "Login successful.", token});
+  const token = jwt.sign({ userId: user.id }, tokenKey, { expiresIn: "3h" });
+  res.status(200).json({ message: "Login successful.", token });
 })
 
 
@@ -104,7 +109,7 @@ app.get("/time-entry", (req, res) => {
 })
 
 app.post("/time-entry", express.json(), (req, res) => {
-  const {userId, startTime, endTime, note} = req.body;
+  const { userId, startTime, endTime, note } = req.body;
 
   const insertEntry = db.prepare(`
     INSERT INTO time_entries (user_id, start_time, end_time, note) 
@@ -112,7 +117,7 @@ app.post("/time-entry", express.json(), (req, res) => {
   `);
 
   const result = insertEntry.run(userId, startTime, endTime, note);
-  res.status(201).json({id: result.lastInsertRowid});
+  res.status(201).json({ id: result.lastInsertRowid });
 })
 
 // Middleware for unknown routes

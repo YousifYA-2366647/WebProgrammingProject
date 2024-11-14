@@ -42,4 +42,12 @@ button {
     font-size: 16px;
 }
 
+button:hover {
+    background-color: #002ead;
+    transition: 0.7s;
+}
 
+button:active {
+    background-color: cornflowerblue;
+    transition: 0s;
+}
