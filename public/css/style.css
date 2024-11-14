@@ -5,6 +5,7 @@ body {
     flex-direction: column;
     font-family: Arial, sans-serif;
     background: #f8f9fa;
+    margin: 0;
 }
 
 h1 {
@@ -50,4 +51,41 @@ button:hover {
 button:active {
     background-color: cornflowerblue;
     transition: 0s;
+}
+
+.error{
+    display: block;
+  color: red;
+  margin: 5px 0 0 0;
+}
+
+ul {
+    width: 100%;
+    background-color: #dddddd;
+    overflow: hidden;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+li {
+    float: left;
+    display: inline;
+}
+
+li a {
+    display: block;
+    color: cornflowerblue;
+    text-align: center;
+    padding: 10px 16px;
+    text-decoration: none;
+}
+
+li a:hover {
+    background-color: cornflowerblue;
+    color: white;
+}
+
+.active {
+    background-color: cornflowerblue;
+    color: white;
 }

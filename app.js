@@ -30,8 +30,10 @@ app.use((request, response, next) => {
   next();
 });
 
+// pagina's
+
 app.get("/", (request, response) => {
-  response.redirect('/login');
+  response.sendFile(path.join(process.cwd(), "public/home.html"));
 });
 
 app.get("/login", (request, response) => {
@@ -41,6 +43,11 @@ app.get("/login", (request, response) => {
 app.get("/register", (request, response) => {
   response.sendFile(path.join(process.cwd(), "public/register.html"));
 });
+
+app.get("/logout", (request, response) => {
+  response.redirect("/login");
+});
+
 
 // register
 app.post("/register", express.json(), async (req, res) => {

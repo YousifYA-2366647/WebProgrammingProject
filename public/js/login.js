@@ -1,8 +1,13 @@
-function login(){
+function login() {
     let body = {
         email: document.getElementById("email").value,
         password: document.getElementById("password").value,
     };
+
+    if (!body.email || !body.password) {
+        document.getElementById("error").textContent = "Please fill in all fields";
+        return;
+    }
 
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -12,9 +17,13 @@ function login(){
         headers: myHeaders,
         body: JSON.stringify(body)
     })
-    .then((response)=>{
-        console.log(response)
-    });
+        .then((response) => {
+            if (response.status == 200) {
+                // succes
+                window.location.pathname = '/';
+            }
+            console.log(response)
+        });
 }
 
 let buttonLogin = document.getElementById("button");
