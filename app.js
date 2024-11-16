@@ -70,17 +70,6 @@ app.post("/register", express.json(), async (req, res) => {
 
 
 // login and users
-function authenticateToken(req, res, next) {
-  const token = req.headers['authorization']?.split(' ')[1];
-  if (!token) return res.status(401).json({ error: "Access denied" });
-
-  jwt.verify(token, tokenKey, (err, user) => {
-    if (err) return res.status(403).json({ error: "Invalid token" });
-    req.user = user;
-    next();
-  });
-}
-
 app.get("/users", (req, res) => {
   const users = db.prepare("SELECT * FROM users").all();
   res.json(users);
@@ -104,9 +93,22 @@ app.post("/login", express.json(), async (req, res) => {
     }
   }
 
-  const token = jwt.sign({ userId: user.id }, tokenKey, { expiresIn: "3h" });
+  const token = jwt.sign({ userId: user.id, email: user.email }, tokenKey, { expiresIn: "3h" });
+  console.log(token);
   res.status(200).json({ message: "Login successful.", token });
 })
+
+app.get("/protected", (req, res) => {
+  const token = req.headers.authorization;
+  if (!token) return res.status(401).json({ error: "Access denied" });
+
+  try {
+    const decoded = jwt.verify(token, tokenKey);
+    res.json(decoded);
+  } catch (err) {
+    res.status(401).json({message: "Token is invalid or expired!"});
+  }
+});
 
 
 // time entry handling
