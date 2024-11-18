@@ -10,7 +10,7 @@ function createAccount() {
         return;
     }
 
-    if (body.password != document.getElementById("confirm-password")) {
+    if (body.password != document.getElementById("confirm-password").value) {
         document.getElementById("error").textContent = "Passwords do not match";
         return
     }
@@ -23,13 +23,17 @@ function createAccount() {
         headers: myHeaders,
         body: JSON.stringify(body)
     })
-        .then((response) => {
+        .then(response => {
             if (response.status == 201) {
-                // succes
                 window.location.pathname = '/login';
+                return;
             }
-            else {
-                document.getElementById("error").textContent = "Couldn't create account"
+            return response.json();
+
+        })
+        .then(res => {
+            if (res) {
+                document.getElementById("error").textContent = res.error;
             }
         });
 }

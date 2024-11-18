@@ -17,12 +17,20 @@ function login() {
         headers: myHeaders,
         body: JSON.stringify(body)
     })
-        .then((response) => {
-            if (response.status == 200) {
-                // succes
-                window.location.pathname = '/';
+        .then(res => {
+            succes = false;
+            if (res.status == 200) {
+                succes = true;
             }
-            console.log(response)
+            return res.json();
+        })
+        .then(res => {
+            if (!succes) {
+                document.getElementById("error").textContent = res.error;
+                return;
+            }
+            localStorage.setItem("token", res.token);
+            window.location.pathname = '/';
         });
 }
 
