@@ -8,6 +8,25 @@ const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
 const tokenKey = "MaeuM";
 
+// hulp functies
+function authorizeRole(role) {
+  return (req, res, next) => {
+    const token = req.headers.authorization;
+    if (!token) return res.status(401).json({error: "Access Denied"});
+
+    try {
+      const decoded = jwt.verify(token, tokenKey);
+      if (decoded.role !== role) {
+        return res.status(403).json({error: "Forbidden entry"});
+      }
+      req.user = decoded;
+      next();
+    } catch (error) {
+      res.status(401).json({error: "Invalid Token"});
+    }
+  }
+}
+
 // post request kunnen lezen
 app.use(express.json());
 app.use(express.urlencoded());
@@ -60,8 +79,8 @@ app.post("/register", express.json(), async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    const insertUser = db.prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)")
-    const result = insertUser.run(username, email, hashedPassword);
+    const insertUser = db.prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)")
+    const result = insertUser.run(username, email, hashedPassword, "user");
     res.status(201).json({ id: result.lastInsertRowid });
   } catch (error) {
     res.status(400).json({ error: "User with this email already exists." });
@@ -70,7 +89,7 @@ app.post("/register", express.json(), async (req, res) => {
 
 
 // login and users
-app.get("/users", (req, res) => {
+app.get("/users", authorizeRole("admin"), (req, res) => {
   const users = db.prepare("SELECT * FROM users").all();
   res.json(users);
 })
@@ -84,31 +103,17 @@ app.post("/login", express.json(), async (req, res) => {
   if (!user) {
     return res.status(400).json({ error: "No users found." });
   }
-  if (password != user.password) {
-    const passwordMatch = await bcrypt.compare(password, user.password);
+  const passwordMatch = await bcrypt.compare(password, user.password);
 
-    if (!passwordMatch) {
-      console.log(password + " " + user.password)
-      return res.status(400).json({ error: "Wrong Password." });
-    }
+  if (!passwordMatch) {
+    console.log(password + " " + user.password)
+    return res.status(400).json({ error: "Wrong Password." });
   }
 
   const token = jwt.sign({ userId: user.id, email: user.email }, tokenKey, { expiresIn: "3h" });
   console.log(token);
   res.status(200).json({ message: "Login successful.", token });
 })
-
-app.get("/protected", (req, res) => {
-  const token = req.headers.authorization;
-  if (!token) return res.status(401).json({ error: "Access denied" });
-
-  try {
-    const decoded = jwt.verify(token, tokenKey);
-    res.json(decoded);
-  } catch (err) {
-    res.status(401).json({message: "Token is invalid or expired!"});
-  }
-});
 
 
 // time entry handling

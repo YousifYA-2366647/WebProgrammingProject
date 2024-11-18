@@ -1,4 +1,5 @@
 import Database from "better-sqlite3";
+import bcrypt from "bcrypt";
 
 const db = new Database("database.db", { verbose: console.log });
 
@@ -25,12 +26,13 @@ export function InitializeDatabase() {
 }
 
 
-function prepareUsers() {
+async function prepareUsers() {
   db.prepare(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL
+    password TEXT NOT NULL,
+    role TEXT NOT NULL
     ) STRICT`).run();
 
   const exampleUsers = [
@@ -41,12 +43,13 @@ function prepareUsers() {
   ];
 
   const findUser = db.prepare("SELECT id FROM users WHERE name = ?");
-  const insertUser = db.prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
-  let i = "a";
+  const insertUser = db.prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)");
+  let password = "a";
+  const hashedPassword = await bcrypt.hash(password, 10);
   exampleUsers.forEach((user) => {
     if (!findUser.get(user.name)) {
       const email = user.name + "@gmail.com";
-      insertUser.run(user.name, email, i);
+      insertUser.run(user.name, email, hashedPassword, "user");
     }
   });
 }
