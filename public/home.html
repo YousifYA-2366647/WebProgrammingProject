@@ -1,24 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="css/style.css">
     <title>Home page</title>
 </head>
+
 <body>
 
-<ul>
-    <li><a href="/" class="active">Home</a></li>
-    <li><a href="/">Analyse</a></li>
-    <li><a href="/">Input data</a></li>
-    <li style="float:right"><a href="/logout">Logout</a></li>
-</ul>
+    <ul>
+        <li><a href="/" class="active">Home</a></li>
+        <li><a href="/analyse">Analyse</a></li>
+        <li><a href="/input">Input data</a></li>
+        <li style="float:right"><a href="/logout" id="logout">Logout</a></li>
+        <li style="float:right"><a href="/settings">Settings</a></li>
+    </ul>
 
-<h1>Home</h1>
+    <h1>Home</h1>
 
-<script>
-    console.log(localStorage.getItem("token"));
-</script>
+    <script src="js/token.js"></script>
 
 </body>
+
 </html>

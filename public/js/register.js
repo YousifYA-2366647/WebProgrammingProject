@@ -25,7 +25,7 @@ function createAccount() {
     })
         .then(response => {
             if (response.status == 201) {
-                window.location.pathname = '/login';
+                window.location.href = '/login';
                 return;
             }
             return response.json();

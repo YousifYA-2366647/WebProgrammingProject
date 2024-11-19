@@ -67,6 +67,18 @@ app.get("/logout", (request, response) => {
   response.redirect("/login");
 });
 
+app.get("/analyse", (request, response) => {
+  response.sendFile(path.join(process.cwd(), "public/analyse.html"));
+});
+
+app.get("/input", (request, response) => {
+  response.sendFile(path.join(process.cwd(), "public/input.html"));
+});
+
+app.get("/settings", (request, response) => {
+  response.sendFile(path.join(process.cwd(), "public/settings.html"));
+});
+
 
 // register
 app.post("/register", express.json(), async (req, res) => {
