@@ -12,19 +12,38 @@ const tokenKey = "MaeuM";
 function authorizeRole(role) {
   return (req, res, next) => {
     const token = req.headers.authorization;
-    if (!token) return res.status(401).json({error: "Access Denied"});
+    if (!token) return res.status(401).json({ error: "Access Denied" });
 
     try {
       const decoded = jwt.verify(token, tokenKey);
       if (decoded.role !== role) {
-        return res.status(403).json({error: "Forbidden entry"});
+        return res.status(403).json({ error: "Forbidden entry" });
       }
       req.user = decoded;
       next();
     } catch (error) {
-      res.status(401).json({error: "Invalid Token"});
+      res.status(401).json({ error: "Invalid Token" });
     }
   }
+}
+
+function getCookies(request) {
+  const list = {};
+  const cookieHeader = request.headers?.cookie;
+
+  // geen cookies
+  if (!cookieHeader) return list;
+
+  cookieHeader.split(`;`).forEach(function (cookie) {
+    let [name, ...rest] = cookie.split(`=`);
+    name = name?.trim();
+    if (!name) return;
+    const value = rest.join(`=`).trim();
+    if (!value) return;
+    list[name] = decodeURIComponent(value);
+  });
+
+  return list;
 }
 
 // post request kunnen lezen
@@ -52,6 +71,7 @@ app.use((request, response, next) => {
 // pagina's
 
 app.get("/", (request, response) => {
+  console.log(getCookies(request));
   response.sendFile(path.join(process.cwd(), "public/home.html"));
 });
 
@@ -61,10 +81,6 @@ app.get("/login", (request, response) => {
 
 app.get("/register", (request, response) => {
   response.sendFile(path.join(process.cwd(), "public/register.html"));
-});
-
-app.get("/logout", (request, response) => {
-  response.redirect("/login");
 });
 
 app.get("/analyse", (request, response) => {
@@ -124,9 +140,16 @@ app.post("/login", express.json(), async (req, res) => {
 
   const token = jwt.sign({ userId: user.id, email: user.email }, tokenKey, { expiresIn: "3h" });
   console.log(token);
-  res.status(200).json({ message: "Login successful.", token });
-})
 
+  // token opslaan als cookie
+  res.cookie("token", token, {
+    secure: process.env.NODE_ENV !== "development",
+    httpOnly: true,
+    sameSite: "strict",
+    expires: new Date(Date.now() + 10800000), // 3hr
+  });
+  res.status(200).json({ message: "Login successful." });
+})
 
 // time entry handling
 app.get("/time-entry", (req, res) => {

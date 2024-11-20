@@ -2,6 +2,6 @@
 
 ## Front-end
 
--[ ] data weergeven
--[ ] data input
--[ ] settings pagina
+- [ ] data weergeven
+- [ ] data input
+- [ ] settings pagina
