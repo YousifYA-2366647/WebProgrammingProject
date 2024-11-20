@@ -23,13 +23,17 @@ function createAccount() {
         headers: myHeaders,
         body: JSON.stringify(body)
     })
-        .then((response) => {
+        .then(response => {
             if (response.status == 201) {
-                // succes
-                window.location.pathname = '/login';
+                window.location.href = '/login';
+                return;
             }
-            else {
-                document.getElementById("error").textContent = "Couldn't create account"
+            return response.json();
+
+        })
+        .then(res => {
+            if (res) {
+                document.getElementById("error").textContent = res.error;
             }
         });
 }

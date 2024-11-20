@@ -9,20 +9,25 @@ function login() {
         return;
     }
 
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-
     fetch("/login", {
         method: "POST",
-        headers: myHeaders,
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify(body)
     })
-        .then((response) => {
-            if (response.status == 200) {
-                // succes
-                window.location.pathname = '/';
+        .then(res => {
+            succes = false;
+            if (res.status == 200) {
+                succes = true;
             }
-            console.log(response)
+            return res.json();
+        })
+        .then(res => {
+            if (!succes) {
+                document.getElementById("error").textContent = res.error;
+                return;
+            }
+            sessionStorage.setItem("token", res.token);
+            window.location.href = '/';
         });
 }
 
