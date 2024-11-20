@@ -3,6 +3,7 @@ import { InitializeDatabase, db } from "./db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import path from 'path';
+import Joi from "joi";
 
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
@@ -16,8 +17,10 @@ function authorizeRole(role) {
 
     try {
       const decoded = jwt.verify(token, tokenKey);
-      if (decoded.role !== role) {
-        return res.status(403).json({ error: "Forbidden entry" });
+      const user = db.prepare("SELECT * FROM users WHERE email = ?").get(decoded.email);
+      console.log(user);
+      if (user.role != role) {
+        return res.status(403).json({error: "Forbidden entry"});
       }
       req.user = decoded;
       next();
@@ -98,19 +101,29 @@ app.get("/settings", (request, response) => {
 
 // register
 app.post("/register", express.json(), async (req, res) => {
-  const { username, email, password } = req.body;
 
-  if (!username || !password || !email) {
-    return res.status(400).json({ error: "Username, email and password are required." });
+  const registerForm = Joi.object( {
+    username: Joi.string().min(3).max(30).required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().min(8).required()
+  })
+
+  const {error} = registerForm.validate(req.body);
+  if (error) {
+    console.log(error.details[0].message);
+    return res.status(400).json({ error: error.details[0].message });
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
+  console.log(hashedPassword);
   try {
     const insertUser = db.prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)")
-    const result = insertUser.run(username, email, hashedPassword, "user");
+    const result = insertUser.run(req.body.username, req.body.email, hashedPassword, "user");
+    console.log(result);
     res.status(201).json({ id: result.lastInsertRowid });
-  } catch (error) {
+
+  } catch (err) {
     res.status(400).json({ error: "User with this email already exists." });
   }
 })
