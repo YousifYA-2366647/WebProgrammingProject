@@ -10,7 +10,7 @@ function createAccount() {
         return;
     }
 
-    if (body.password != document.getElementById("confirm-password")) {
+    if (body.password != document.getElementById("confirm-password").value) {
         document.getElementById("error").textContent = "Passwords do not match";
         return
     }

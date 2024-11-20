@@ -49,7 +49,7 @@ async function prepareUsers() {
   exampleUsers.forEach((user) => {
     if (!findUser.get(user.name)) {
       const email = user.name + "@gmail.com";
-      insertUser.run(user.name, email, hashedPassword, "user");
+      insertUser.run(user.name, email, hashedPassword, "admin");
     }
   });
 }
