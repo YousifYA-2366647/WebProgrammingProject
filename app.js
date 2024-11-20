@@ -30,6 +30,52 @@ function authorizeRole(role) {
   }
 }
 
+async function insertUser(username, email, password, role) {
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const insertUser = db.prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)")
+  const result = insertUser.run(username, email, hashedPassword, role);
+  console.log(result);
+  return result;
+}
+
+async function createToken(email, password) {
+  const user = db.prepare("SELECT * FROM users WHERE email = ?").get(email);
+
+  if (!user) {
+    console.log("User doesn't exist.");
+    return null;
+  }
+  const passwordMatch = await bcrypt.compare(password, user.password);
+
+  if (!passwordMatch) {
+    console.log(password + " " + user.password)
+    console.log("Wrong password.");
+    return null;
+  }
+
+  const token = jwt.sign({ userId: user.id, email: user.email }, tokenKey, { expiresIn: "3h" });
+  return token;
+}
+
+function checkRegisterRequest() {
+  return (req, res, next) => {
+    const registerForm = Joi.object( {
+      username: Joi.string().min(3).max(30).required(),
+      email: Joi.string().email().required(),
+      password: Joi.string().min(8).required()
+    })
+
+    const {error} = registerForm.validate(req.body);
+    if (error) {
+      console.log(error.details[0].message);
+      return res.status(400).json({ error: error.details[0].message });
+    }
+    next();
+  }
+}
+
 function getCookies(request) {
   const list = {};
   const cookieHeader = request.headers?.cookie;
@@ -131,27 +177,9 @@ app.get("/logout", (request, response) => {
 
 
 // register
-app.post("/register", express.json(), async (req, res) => {
-
-  const registerForm = Joi.object({
-    username: Joi.string().min(3).max(30).required(),
-    email: Joi.string().email().required(),
-    password: Joi.string().min(8).required()
-  })
-
-  const { error } = registerForm.validate(req.body);
-  if (error) {
-    console.log(error.details[0].message);
-    return res.status(400).json({ error: error.details[0].message });
-  }
-
-  const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
-  console.log(hashedPassword);
+app.post("/register", express.json(), checkRegisterRequest(), async (req, res) => {
   try {
-    const insertUser = db.prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)")
-    const result = insertUser.run(req.body.username, req.body.email, hashedPassword, "user");
-    console.log(result);
+    const result = await insertUser(req.body.username, req.body.email, req.body.password, "user");
     res.status(201).json({ id: result.lastInsertRowid });
 
   } catch (err) {
@@ -170,19 +198,11 @@ app.post("/login", express.json(), async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  const user = db.prepare("SELECT * FROM users WHERE email = ?").get(email);
-
-  if (!user) {
-    return res.status(400).json({ error: "No users found." });
+  const token = await createToken(email, password);
+  if (token == null) {
+    return res.status(400).json({ error: "Wrong email or password." });
   }
-  const passwordMatch = await bcrypt.compare(password, user.password);
-
-  if (!passwordMatch) {
-    console.log(password + " " + user.password)
-    return res.status(400).json({ error: "Wrong Password." });
-  }
-
-  const token = jwt.sign({ userId: user.id, email: user.email }, tokenKey, { expiresIn: "3h" });
+  
   console.log(token);
 
   // token opslaan als cookie
@@ -192,6 +212,7 @@ app.post("/login", express.json(), async (req, res) => {
     sameSite: "strict",
     expires: new Date(Date.now() + 10800000), // 3hr
   });
+
   res.status(200).json({ message: "Login successful." });
 })
 
@@ -208,8 +229,8 @@ app.post("/time-entry", express.json(), (req, res) => {
     INSERT INTO time_entries (user_id, start_time, end_time, note) 
     VALUES (?, ?, ?, ?)
   `);
-
   const result = insertEntry.run(userId, startTime, endTime, note);
+
   res.status(201).json({ id: result.lastInsertRowid });
 })
 
