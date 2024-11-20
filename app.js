@@ -20,7 +20,7 @@ function authorizeRole(role) {
       const user = db.prepare("SELECT * FROM users WHERE email = ?").get(decoded.email);
       console.log(user);
       if (user.role != role) {
-        return res.status(403).json({error: "Forbidden entry"});
+        return res.status(403).json({ error: "Forbidden entry" });
       }
       req.user = decoded;
       next();
@@ -98,17 +98,29 @@ app.get("/settings", (request, response) => {
   response.sendFile(path.join(process.cwd(), "public/settings.html"));
 });
 
+app.get("/logout", (request, response) => {
+  // delete token on logout
+  response.cookie("token", "", {
+    secure: process.env.NODE_ENV !== "development",
+    httpOnly: true,
+    sameSite: "strict",
+    expires: new Date(Date.now()),
+  });
+
+  response.redirect("/login");
+});
+
 
 // register
 app.post("/register", express.json(), async (req, res) => {
 
-  const registerForm = Joi.object( {
+  const registerForm = Joi.object({
     username: Joi.string().min(3).max(30).required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(8).required()
   })
 
-  const {error} = registerForm.validate(req.body);
+  const { error } = registerForm.validate(req.body);
   if (error) {
     console.log(error.details[0].message);
     return res.status(400).json({ error: error.details[0].message });
