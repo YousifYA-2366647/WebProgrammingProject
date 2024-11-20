@@ -7,7 +7,8 @@ function sendInput(event) {
         title: document.getElementById("title").value,
         start: document.getElementById("starttime").value,
         end: document.getElementById("endtime").value,
-        description: document.getElementById("description").value
+        description: document.getElementById("description").value,
+        files: document.getElementById("file").files,
     };
 
     if (!body.title || !body.start || !body.end) {
