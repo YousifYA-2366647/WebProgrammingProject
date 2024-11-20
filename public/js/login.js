@@ -11,7 +11,7 @@ function login() {
 
     fetch("/login", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)
     })
         .then(res => {
@@ -26,7 +26,6 @@ function login() {
                 document.getElementById("error").textContent = res.error;
                 return;
             }
-            sessionStorage.setItem("token", res.token);
             window.location.href = '/';
         });
 }

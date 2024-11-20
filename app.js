@@ -13,21 +13,86 @@ const tokenKey = "MaeuM";
 function authorizeRole(role) {
   return (req, res, next) => {
     const token = req.headers.authorization;
-    if (!token) return res.status(401).json({error: "Access Denied"});
+    if (!token) return res.status(401).json({ error: "Access Denied" });
 
     try {
       const decoded = jwt.verify(token, tokenKey);
       const user = db.prepare("SELECT * FROM users WHERE email = ?").get(decoded.email);
       console.log(user);
       if (user.role != role) {
-        return res.status(403).json({error: "Forbidden entry"});
+        return res.status(403).json({ error: "Forbidden entry" });
       }
       req.user = decoded;
       next();
     } catch (error) {
-      res.status(401).json({error: "Invalid Token"});
+      res.status(401).json({ error: "Invalid Token" });
     }
   }
+}
+
+async function insertUser(username, email, password, role) {
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const insertUser = db.prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)")
+  const result = insertUser.run(username, email, hashedPassword, role);
+  console.log(result);
+  return result;
+}
+
+async function createToken(email, password) {
+  const user = db.prepare("SELECT * FROM users WHERE email = ?").get(email);
+
+  if (!user) {
+    console.log("User doesn't exist.");
+    return null;
+  }
+  const passwordMatch = await bcrypt.compare(password, user.password);
+
+  if (!passwordMatch) {
+    console.log(password + " " + user.password)
+    console.log("Wrong password.");
+    return null;
+  }
+
+  const token = jwt.sign({ userId: user.id, email: user.email }, tokenKey, { expiresIn: "3h" });
+  return token;
+}
+
+function checkRegisterRequest() {
+  return (req, res, next) => {
+    const registerForm = Joi.object( {
+      username: Joi.string().min(3).max(30).required(),
+      email: Joi.string().email().required(),
+      password: Joi.string().min(8).required()
+    })
+
+    const {error} = registerForm.validate(req.body);
+    if (error) {
+      console.log(error.details[0].message);
+      return res.status(400).json({ error: error.details[0].message });
+    }
+    next();
+  }
+}
+
+function getCookies(request) {
+  const list = {};
+  const cookieHeader = request.headers?.cookie;
+
+  // geen cookies
+  if (!cookieHeader) return list;
+
+  cookieHeader.split(`;`).forEach(function (cookie) {
+    let [name, ...rest] = cookie.split(`=`);
+    name = name?.trim();
+    if (!name) return;
+    const value = rest.join(`=`).trim();
+    if (!value) return;
+    list[name] = decodeURIComponent(value);
+  });
+
+  return list;
 }
 
 async function insertUser(username, email, password, role) {
@@ -101,6 +166,7 @@ app.use((request, response, next) => {
 // pagina's
 
 app.get("/", (request, response) => {
+  console.log(getCookies(request));
   response.sendFile(path.join(process.cwd(), "public/home.html"));
 });
 
@@ -110,10 +176,6 @@ app.get("/login", (request, response) => {
 
 app.get("/register", (request, response) => {
   response.sendFile(path.join(process.cwd(), "public/register.html"));
-});
-
-app.get("/logout", (request, response) => {
-  response.redirect("/login");
 });
 
 app.get("/analyse", (request, response) => {
@@ -128,11 +190,23 @@ app.get("/settings", (request, response) => {
   response.sendFile(path.join(process.cwd(), "public/settings.html"));
 });
 
+app.get("/logout", (request, response) => {
+  // delete token on logout
+  response.cookie("token", "", {
+    secure: process.env.NODE_ENV !== "development",
+    httpOnly: true,
+    sameSite: "strict",
+    expires: new Date(Date.now()),
+  });
+
+  response.redirect("/login");
+});
+
 
 // register
 app.post("/register", express.json(), checkRegisterRequest(), async (req, res) => {
   try {
-    const result = insertUser(req.body.username, req.body.email, req.body.password, "user");
+    const result = await insertUser(req.body.username, req.body.email, req.body.password, "user");
     res.status(201).json({ id: result.lastInsertRowid });
 
   } catch (err) {
@@ -157,9 +231,17 @@ app.post("/login", express.json(), async (req, res) => {
   }
   
   console.log(token);
-  res.status(200).json({ message: "Login successful.", token });
-})
 
+  // token opslaan als cookie
+  res.cookie("token", token, {
+    secure: process.env.NODE_ENV !== "development",
+    httpOnly: true,
+    sameSite: "strict",
+    expires: new Date(Date.now() + 10800000), // 3hr
+  });
+
+  res.status(200).json({ message: "Login successful." });
+})
 
 // time entry handling
 app.get("/time-entry", (req, res) => {
