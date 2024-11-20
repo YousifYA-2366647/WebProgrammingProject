@@ -95,52 +95,6 @@ function getCookies(request) {
   return list;
 }
 
-async function insertUser(username, email, password, role) {
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const insertUser = db.prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)")
-  const result = insertUser.run(username, email, hashedPassword, role);
-  console.log(result);
-  return result;
-}
-
-async function createToken(email, password) {
-  const user = db.prepare("SELECT * FROM users WHERE email = ?").get(email);
-
-  if (!user) {
-    console.log("User doesn't exist.");
-    return null;
-  }
-  const passwordMatch = await bcrypt.compare(password, user.password);
-
-  if (!passwordMatch) {
-    console.log(password + " " + user.password)
-    console.log("Wrong password.");
-    return null;
-  }
-
-  const token = jwt.sign({ userId: user.id, email: user.email }, tokenKey, { expiresIn: "3h" });
-  return token;
-}
-
-function checkRegisterRequest() {
-  return (req, res, next) => {
-    const registerForm = Joi.object( {
-      username: Joi.string().min(3).max(30).required(),
-      email: Joi.string().email().required(),
-      password: Joi.string().min(8).required()
-    })
-
-    const {error} = registerForm.validate(req.body);
-    if (error) {
-      console.log(error.details[0].message);
-      return res.status(400).json({ error: error.details[0].message });
-    }
-    next();
-  }
-}
-
 // post request kunnen lezen
 app.use(express.json());
 app.use(express.urlencoded());
