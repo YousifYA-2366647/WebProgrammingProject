@@ -15,10 +15,7 @@ function login() {
         body: JSON.stringify(body)
     })
         .then(res => {
-            succes = false;
-            if (res.status == 200) {
-                succes = true;
-            }
+            succes = (res.status == 200);
             return res.json();
         })
         .then(res => {

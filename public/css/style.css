@@ -61,11 +61,14 @@ button:active {
 
 ul {
     width: 100%;
-    background-color: #dddddd;
     overflow: hidden;
     list-style-type: none;
     margin: 0;
     padding: 0;
+}
+
+ul.navbar{
+    background-color: #dddddd;
 }
 
 li {
@@ -106,6 +109,8 @@ textarea.input-form {
     width: 100%;
     height: 50%;
     resize: none;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
 button.input-form {
