@@ -74,7 +74,11 @@ app.use((request, response, next) => {
 // pagina's
 
 app.get("/", (request, response) => {
-  console.log(getCookies(request));
+  if (!getCookies(request).token) {
+    response.redirect("/login");
+    return;
+  }
+
   response.sendFile(path.join(process.cwd(), "public/home.html"));
 });
 
@@ -87,14 +91,29 @@ app.get("/register", (request, response) => {
 });
 
 app.get("/analyse", (request, response) => {
+  if (!getCookies(request).token) {
+    response.redirect("/login");
+    return;
+  }
+
   response.sendFile(path.join(process.cwd(), "public/analyse.html"));
 });
 
 app.get("/input", (request, response) => {
+  if (!getCookies(request).token) {
+    response.redirect("/login");
+    return;
+  }
+
   response.sendFile(path.join(process.cwd(), "public/input.html"));
 });
 
 app.get("/settings", (request, response) => {
+  if (!getCookies(request).token) {
+    response.redirect("/login");
+    return;
+  }
+
   response.sendFile(path.join(process.cwd(), "public/settings.html"));
 });
 
