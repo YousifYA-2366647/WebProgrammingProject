@@ -1,4 +1,6 @@
-function sendInput() {
+function sendInput(event) {
+    event.preventDefault();
+
     error = document.getElementById("error");
 
     let body = {
@@ -29,5 +31,5 @@ function sendInput() {
         });
 }
 
-let button = document.getElementById("button");
-button.onclick = sendInput;
+form = document.getElementById("form");
+form.addEventListener('submit', sendInput);

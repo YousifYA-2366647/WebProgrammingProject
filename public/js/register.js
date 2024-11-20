@@ -1,4 +1,6 @@
-function createAccount() {
+function createAccount(event) {
+    event.preventDefault();
+
     let body = {
         username: document.getElementById("username").value,
         email: document.getElementById("email").value,
@@ -38,5 +40,5 @@ function createAccount() {
         });
 }
 
-let buttonRegister = document.getElementById("button");
-button.onclick = createAccount;
+form = document.getElementById("form");
+form.addEventListener('submit', login);

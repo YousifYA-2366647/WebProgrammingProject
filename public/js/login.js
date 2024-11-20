@@ -1,4 +1,6 @@
-function login() {
+function login(event) {
+    event.preventDefault();
+    
     let body = {
         email: document.getElementById("email").value,
         password: document.getElementById("password").value,
@@ -27,5 +29,5 @@ function login() {
         });
 }
 
-let buttonLogin = document.getElementById("button");
-buttonLogin.onclick = login;
+form = document.getElementById("form");
+form.addEventListener('submit', login);
