@@ -12,7 +12,7 @@
   <ul>
     <li><a href="/">Home</a></li>
     <li><a href="/analyse">Analyse</a></li>
-    <li><a href="/input" class="active">Input data</a></li>
+    <li><a href="#" class="active">Input data</a></li>
     <li style="float:right"><a href="/logout">Logout</a></li>
     <li style="float:right"><a href="/settings">Settings</a></li>
   </ul>
@@ -20,17 +20,17 @@
 
   <h1>Input data</h1>
 
-  <form>
-    <label>Title</label>
-    <input type="text" required>
-    <label>Start</label>
-    <input type="datetime-local" required/>
-    <label>End</label>
-    <input type="datetime-local" required/>
-    <label>Description</label>
-    <textarea maxlength="500"></textarea>
-    <input type="file" />
-    <button type="submit">Submit</button>
+  <form class="input-form">
+    <label class="input-form">Title:</label>
+    <input type="text" class="input-form" required>
+    <label class="input-form">Start:</label>
+    <input type="datetime-local" class="input-form" required />
+    <label class="input-form">End:</label>
+    <input type="datetime-local" class="input-form" required />
+    <label class="input-form">Description:</label>
+    <textarea maxlength="1024" class="input-form"></textarea>
+    <input type="file" class="input-form"/>
+    <button type="submit" class="input-form">Submit</button>
   </form>
 
 </body>
