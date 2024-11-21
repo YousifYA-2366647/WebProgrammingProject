@@ -61,13 +61,13 @@ async function createToken(email, password) {
 
 function checkRegisterRequest() {
   return (req, res, next) => {
-    const registerForm = Joi.object( {
+    const registerForm = Joi.object({
       username: Joi.string().min(3).max(30).required(),
       email: Joi.string().email().required(),
       password: Joi.string().min(8).required()
     })
 
-    const {error} = registerForm.validate(req.body);
+    const { error } = registerForm.validate(req.body);
     if (error) {
       console.log(error.details[0].message);
       return res.status(400).json({ error: error.details[0].message });
@@ -93,25 +93,6 @@ function getCookies(request) {
   });
 
   return list;
-}
-
-function checkEntryRequest() {
-  return (req, res, next) => {
-    const entryForm = Joi.object({
-      title: Joi.string().min(1).max(50).required(),
-      start: Joi.string().isoDate().required(),
-      end: Joi.string().isoDate().required(),
-      description: Joi.string().max(1024),
-      files: Joi.object()
-    })
-    
-    const {error} = entryForm.validate(req.body);
-    if (error) {
-      console.log(error.details[0].message);
-      return res.status(400).json({ error: error.details[0].message });
-    }
-    next();
-  }
 }
 
 // post request kunnen lezen
@@ -144,7 +125,7 @@ app.get("/", (request, response) => {
     return;
   }
 
-  response.sendFile(path.join(process.cwd(), "public/home.html"));
+  response.render('pages/home');
 });
 
 app.get("/login", (request, response) => {
@@ -161,7 +142,7 @@ app.get("/analyse", (request, response) => {
     return;
   }
 
-  response.sendFile(path.join(process.cwd(), "public/analyse.html"));
+  response.render('pages/analyse');
 });
 
 app.get("/input", (request, response) => {
@@ -170,7 +151,7 @@ app.get("/input", (request, response) => {
     return;
   }
 
-  response.sendFile(path.join(process.cwd(), "public/input.html"));
+  response.render('pages/input');
 });
 
 app.get("/settings", (request, response) => {
@@ -179,7 +160,7 @@ app.get("/settings", (request, response) => {
     return;
   }
 
-  response.sendFile(path.join(process.cwd(), "public/settings.html"));
+  response.render('pages/settings');
 });
 
 app.get("/logout", (request, response) => {
@@ -221,7 +202,7 @@ app.post("/login", express.json(), async (req, res) => {
   if (token == null) {
     return res.status(400).json({ error: "Wrong email or password." });
   }
-  
+
   console.log(token);
 
   // token opslaan als cookie
@@ -236,24 +217,19 @@ app.post("/login", express.json(), async (req, res) => {
 })
 
 // time entry handling
-app.get("/analyse", (req, res) => {
+app.get("/time-entry", (req, res) => {
   const entries = db.prepare("SELECT * FROM time_entries").all();
   res.json(entries);
 })
 
-app.post("/time-entry", checkEntryRequest(), express.json(), (req, res) => {
-  const userId = jwt.verify(getCookies(req).token, tokenKey).userId;
-  const title = req.body.title;
-  const startTime = req.body.start;
-  const endTime = req.body.end;
-  const description = req.body.description;
-  const files = JSON.stringify(req.body.files);
+app.post("/time-entry", express.json(), (req, res) => {
+  const { userId, startTime, endTime, note } = req.body;
 
   const insertEntry = db.prepare(`
-    INSERT INTO time_entries (user_id, title, start_time, end_time, description, files) 
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO time_entries (user_id, start_time, end_time, note) 
+    VALUES (?, ?, ?, ?)
   `);
-  const result = insertEntry.run(userId, title, startTime, endTime, description, files);
+  const result = insertEntry.run(userId, startTime, endTime, note);
 
   res.status(201).json({ id: result.lastInsertRowid });
 })

@@ -11,11 +11,6 @@ function sendInput(event) {
         files: document.getElementById("file").files,
     };
 
-    if (!body.title || !body.start || !body.end) {
-        error.textContent = "Please fill in all required fields"
-        return;
-    }
-
     fetch("/time-entry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -28,8 +23,20 @@ function sendInput(event) {
         .then(res => {
             if (!succes) {
                 error.textContent = res.error;
+                return;
             }
+
+            form.reset();
+
+            // Show succesfull in error span
+            error.textContent = "Submit succesfull";
+            error.style = "color: green; text-align: center";
+
+            // After 3 seconds, hide message
+            setTimeout(function () { error.textContent = ""; error.style = ""; }, 3000);
         });
+
+
 }
 
 form = document.getElementById("form");

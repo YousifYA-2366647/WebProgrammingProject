@@ -56,27 +56,30 @@ button:active {
 .error {
     display: block;
     color: red;
-    margin: 5px 0 0 0;
+    margin: 5px 0 5px 0;
+    width: 100%;
 }
 
 ul {
-    width: 100%;
-    overflow: hidden;
-    list-style-type: none;
-    margin: 0;
     padding: 0;
+    width: 100%;
+}
+li {
+    display: inline;
+    float: left;
 }
 
-ul.navbar{
+nav {
+    width: 100%;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
     background-color: #dddddd;
 }
 
-li {
+nav a {
     float: left;
     display: inline;
-}
-
-li a {
     display: block;
     color: cornflowerblue;
     text-align: center;
@@ -84,12 +87,12 @@ li a {
     text-decoration: none;
 }
 
-li a:hover {
+nav a:hover {
     background-color: cornflowerblue;
     color: white;
 }
 
-.active {
+nav a.active {
     background-color: cornflowerblue;
     color: white;
 }
