@@ -41,4 +41,4 @@ function createAccount(event) {
 }
 
 form = document.getElementById("form");
-form.addEventListener('submit', login);
+form.addEventListener('submit', createAccount);

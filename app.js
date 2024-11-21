@@ -129,11 +129,11 @@ app.get("/", (request, response) => {
 });
 
 app.get("/login", (request, response) => {
-  response.sendFile(path.join(process.cwd(), "public/login.html"));
+  response.render('pages/login');
 });
 
 app.get("/register", (request, response) => {
-  response.sendFile(path.join(process.cwd(), "public/register.html"));
+  response.render('pages/register');
 });
 
 app.get("/analyse", (request, response) => {
