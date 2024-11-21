@@ -18,9 +18,11 @@ export function InitializeDatabase() {
   db.prepare(`CREATE TABLE IF NOT EXISTS time_entries (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER, 
+    title TEXT,
     start_time TEXT, 
     end_time TEXT, 
-    note TEXT,
+    description TEXT,
+    files TEXT[],
     FOREIGN KEY (user_id) REFERENCES users(id)
     )`).run();
 }
