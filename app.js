@@ -1,118 +1,14 @@
 import express from "express";
 import { InitializeDatabase, db } from "./db.js";
-import bcrypt from "bcrypt";
+import { checkEntryRequest, checkRegisterRequest } from "./backend/controllers/formChecking.js";
+import { authorizeRole, getCookies, createToken, tokenKey } from "./backend/middleware/authorization.js";
+import { insertUser, insertEntry } from "./backend/models/inserter.js";
+import { getUsers, getTimeEntries } from "./backend/models/getters.js";
 import jwt from "jsonwebtoken";
 import path from 'path';
-import Joi from "joi";
 
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
-const tokenKey = "MaeuM";
-
-// hulp functies
-function authorizeRole(role) {
-  return (req, res, next) => {
-    const token = req.headers.authorization;
-    if (!token) return res.status(401).json({ error: "Access Denied" });
-
-    try {
-      const decoded = jwt.verify(token, tokenKey);
-      const user = db.prepare("SELECT * FROM users WHERE email = ?").get(decoded.email);
-      console.log(user);
-      if (user.role != role) {
-        return res.status(403).json({ error: "Forbidden entry" });
-      }
-      req.user = decoded;
-      next();
-    } catch (error) {
-      res.status(401).json({ error: "Invalid Token" });
-    }
-  }
-}
-
-async function insertUser(username, email, password, role) {
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const insertUser = db.prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)")
-  const result = insertUser.run(username, email, hashedPassword, role);
-  console.log(result);
-  return result;
-}
-
-async function createToken(email, password) {
-  const user = db.prepare("SELECT * FROM users WHERE email = ?").get(email);
-
-  if (!user) {
-    console.log("User doesn't exist.");
-    return null;
-  }
-  const passwordMatch = await bcrypt.compare(password, user.password);
-
-  if (!passwordMatch) {
-    console.log(password + " " + user.password)
-    console.log("Wrong password.");
-    return null;
-  }
-
-  const token = jwt.sign({ userId: user.id, email: user.email }, tokenKey, { expiresIn: "3h" });
-  return token;
-}
-
-function checkRegisterRequest() {
-  return (req, res, next) => {
-    const registerForm = Joi.object({
-      username: Joi.string().min(3).max(30).required(),
-      email: Joi.string().email().required(),
-      password: Joi.string().min(8).required()
-    })
-
-    const { error } = registerForm.validate(req.body);
-    if (error) {
-      console.log(error.details[0].message);
-      return res.status(400).json({ error: error.details[0].message });
-    }
-    next();
-  }
-}
-
-function getCookies(request) {
-  const list = {};
-  const cookieHeader = request.headers?.cookie;
-
-  // geen cookies
-  if (!cookieHeader) return list;
-
-  cookieHeader.split(`;`).forEach(function (cookie) {
-    let [name, ...rest] = cookie.split(`=`);
-    name = name?.trim();
-    if (!name) return;
-    const value = rest.join(`=`).trim();
-    if (!value) return;
-    list[name] = decodeURIComponent(value);
-  });
-
-  return list;
-}
-
-function checkEntryRequest() {
-  return (req, res, next) => {
-    const entryForm = Joi.object({
-      title: Joi.string().min(1).max(50).required(),
-      start: Joi.string().isoDate().required(),
-      end: Joi.string().isoDate().required(),
-      description: Joi.string().max(1024),
-      files: Joi.object()
-    })
-
-    const { error } = entryForm.validate(req.body);
-    if (error) {
-      console.log(error.details[0].message);
-      return res.status(400).json({ error: error.details[0].message});
-    }
-    next();
-  }
-}
 
 // post request kunnen lezen
 app.use(express.json());
@@ -209,7 +105,7 @@ app.post("/register", express.json(), checkRegisterRequest(), async (req, res) =
 
 // login and users
 app.get("/users", authorizeRole("admin"), (req, res) => {
-  const users = db.prepare("SELECT * FROM users").all();
+  const users = getUsers();
   res.json(users);
 })
 
@@ -237,7 +133,7 @@ app.post("/login", express.json(), async (req, res) => {
 
 // time entry handling
 app.get("/analyse", (req, res) => {
-  const entries = db.prepare("SELECT * FROM time_entries").all();
+  const entries = getTimeEntries();
   res.json(entries);
 })
 
@@ -249,14 +145,9 @@ app.post("/time-entry", checkEntryRequest(), express.json(), (req, res) => {
   const description = req.body.description;
   const files = JSON.stringify(req.body.files);
 
+  insertEntry(userId, title, start, end, description, files);
 
-  const insertEntry = db.prepare(`
-    INSERT INTO time_entries (user_id, title, start_time, end_time, description, files) 
-    VALUES (?, ?, ?, ?, ?, ?)
-  `);
-  const result = insertEntry.run(userId, title, start, end, description, files);
-
-  res.status(201).json({ id: result.lastInsertRowid });
+  res.status(201).json({message: "Entry submitted successfully"});
 })
 
 // Middleware for unknown routes
