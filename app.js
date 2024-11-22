@@ -95,6 +95,25 @@ function getCookies(request) {
   return list;
 }
 
+function checkEntryRequest() {
+  return (req, res, next) => {
+    const entryForm = Joi.object({
+      title: Joi.string().min(1).max(50).required(),
+      start: Joi.string().isoDate().required(),
+      end: Joi.string().isoDate().required(),
+      description: Joi.string().max(1024),
+      files: Joi.object()
+    })
+
+    const { error } = entryForm.validate(req.body);
+    if (error) {
+      console.log(error.details[0].message);
+      return res.status(400).json({ error: error.details[0].message});
+    }
+    next();
+  }
+}
+
 // post request kunnen lezen
 app.use(express.json());
 app.use(express.urlencoded());
@@ -217,19 +236,25 @@ app.post("/login", express.json(), async (req, res) => {
 })
 
 // time entry handling
-app.get("/time-entry", (req, res) => {
+app.get("/analyse", (req, res) => {
   const entries = db.prepare("SELECT * FROM time_entries").all();
   res.json(entries);
 })
 
-app.post("/time-entry", express.json(), (req, res) => {
-  const { userId, startTime, endTime, note } = req.body;
+app.post("/time-entry", checkEntryRequest(), express.json(), (req, res) => {
+  const userId = jwt.verify(getCookies(req).token, tokenKey).userId;
+  const title = req.body.title;
+  const start = req.body.start;
+  const end = req.body.end;
+  const description = req.body.description;
+  const files = JSON.stringify(req.body.files);
+
 
   const insertEntry = db.prepare(`
-    INSERT INTO time_entries (user_id, start_time, end_time, note) 
-    VALUES (?, ?, ?, ?)
+    INSERT INTO time_entries (user_id, title, start_time, end_time, description, files) 
+    VALUES (?, ?, ?, ?, ?, ?)
   `);
-  const result = insertEntry.run(userId, startTime, endTime, note);
+  const result = insertEntry.run(userId, title, start, end, description, files);
 
   res.status(201).json({ id: result.lastInsertRowid });
 })
