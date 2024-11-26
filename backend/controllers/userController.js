@@ -1,4 +1,4 @@
-import {db} from "../../db.js";
+import { db } from "../../db.js";
 import bcrypt from "bcrypt";
 
 export async function insertUser(username, email, password, role) {
@@ -8,12 +8,11 @@ export async function insertUser(username, email, password, role) {
     const result = insertUser.run(username, email, hashedPassword, role);
     console.log(result);
     return result;
-}
+};
 
-export function insertEntry(userId, title, start, end, description, files) {
-    const insertEntry = db.prepare(`
-        INSERT INTO time_entries (user_id, title, start_time, end_time, description, files) 
-        VALUES (?, ?, ?, ?, ?, ?)
-      `);
-      const result = insertEntry.run(userId, title, start, end, description, files);
-}
+export function getUsers(username="%", email="%") {
+    return db.prepare(`
+        SELECT * 
+        FROM users
+        WHERE username LIKE ? AND email LIKE ?`).all(username, email);
+};
