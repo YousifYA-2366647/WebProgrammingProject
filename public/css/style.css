@@ -180,7 +180,6 @@ ul.calender-body li.active {
     color: cornflowerblue;
 }
 
-ul.calender-body li.active:hover {
-    background-color: cornflowerblue;
-    color: white;
+ul.calender-body li.clicked {
+    outline: 3px solid cornflowerblue;
 }
