@@ -64,6 +64,7 @@ ul {
     padding: 0;
     width: 100%;
 }
+
 li {
     display: inline;
     float: left;
@@ -122,4 +123,64 @@ button.input-form {
     width: fit-content;
     padding-left: 10mm;
     padding-right: 10mm;
+}
+
+/* calender */
+
+div.grid-container {
+    height: fit-content;
+    width: 95%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
+div.grid-item {
+    border: 1px solid black;
+}
+
+ul.calender-header {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 0;
+}
+
+ul.calender-header li {
+    width: 100%;
+    text-align: center;
+    padding: 10px 0 10px 0;
+    background-color: #ddd;
+    word-spacing: 10px;
+}
+
+ul.calender-header li.clickable:hover {
+    color: white;
+}
+
+ul.calender-body {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+
+ul.calender-body li {
+    width: 100%;
+    text-align: center;
+    padding: 10px 0 10px 0;
+}
+
+ul.calender-body li.clickable:hover {
+    background-color: cornflowerblue;
+    color: white;
+}
+
+ul.calender-body li.active {
+    color: cornflowerblue;
+}
+
+ul.calender-body li.active:hover {
+    background-color: cornflowerblue;
+    color: white;
 }

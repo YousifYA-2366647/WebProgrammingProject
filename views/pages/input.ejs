@@ -11,19 +11,19 @@
     <h1>Input data</h1>
 
     <form class="input-form" id="form">
-        <label class="input-form">Title:</label>
+        <label class="input-form" for="title">Title:</label>
         <input type="text" class="input-form" id="title" required>
         <ul>
             <li style="width: 50%;">
-                <label class="input-form">Start:</label>
+                <label class="input-form" for="starttime">Start:</label>
                 <input type="datetime-local" class="input-form" id="starttime" required />
             </li>
             <li style="width: 50%;">
-                <label class="input-form">End:</label>
+                <label class="input-form" for="endtime">End:</label>
                 <input type="datetime-local" class="input-form" id="endtime" required />
             </li>
         </ul>
-        <label class="input-form">Description:</label>
+        <label class="input-form" for="description">Description:</label>
         <textarea maxlength="1024" class="input-form" id="description" placeholder="(optional)"></textarea>
         <input multiple type="file" id="file">
         <span id="error" class="error"></span>

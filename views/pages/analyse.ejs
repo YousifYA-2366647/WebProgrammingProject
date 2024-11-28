@@ -2,15 +2,45 @@
 <html lang="en">
 
 <head>
-    <%- include("../partials/head", {title: 'Analyse'}) %>
+    <%- include("../partials/head", {title: 'Analyse' }) %>
 </head>
 
-<body>
+<body style="height: 100%;">
 
     <%- include('../partials/navbar', {active:'analyse'}); %>
 
-    <h1>Analyse data</h1>
+        <h1>Analyse data</h1>
 
+        <div class="grid-container">
+
+            <div class="grid-item">
+                <ul class="calender-header">
+                    <li class="clickable" id="left">&#10094;</li>
+                    <li id="datetext">SHOW DATE</li>
+                    <li class="clickable" id="right">&#10095;</li>
+                </ul>
+                <ul class="calender-header">
+                    <li>Mo</li>
+                    <li>Tu</li>
+                    <li>We</li>
+                    <li>Th</li>
+                    <li>Fr</li>
+                    <li>Sa</li>
+                    <li>Su</li>
+                </ul>
+                <ul class="calender-body">
+                    <% for(var i=0; i<40; i++) {%>
+                        <li id=<%=i -%>></li>
+                        <% } -%>
+                </ul>
+            </div>
+
+            <div class="grid-item">
+
+            </div>
+        </div>
+
+        <script src="js/calender.js"></script>
 </body>
 
 </html>
