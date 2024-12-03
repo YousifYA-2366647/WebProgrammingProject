@@ -1,14 +1,29 @@
 import express from "express";
+import { db } from "../../db.js";
 import { insertUser, getUsers } from "../controllers/userController.js";
 import { checkRegisterRequest } from "../middleware/formChecking.js";
-import { authorizeRole, createToken, getCookies } from "../middleware/authorization.js";
+import { authorizeRole, createToken, getCookies, getUserFromToken } from "../middleware/authorization.js";
 
 const logRouter = express.Router();
 
 logRouter.get("/", (request, response) => {
-    if (!getCookies(request).token) {
+    const userToken = getCookies(request).token;
+    if (!userToken) {
         response.redirect("/login");
         return;
+    }
+
+    const user = getUserFromToken(userToken);
+    let usesDarkMode = 0;
+    if (user != null) {
+        usesDarkMode = db.prepare("SELECT darkMode FROM settings WHERE userId = ?").all(user.id);
+    }
+
+    if (usesDarkMode[0].darkMode == 1) {
+        response.header("config", "dark");
+    }
+    else {
+        response.header("config", "light");
     }
 
     response.render('pages/home');
@@ -23,9 +38,27 @@ logRouter.get("/register", (request, response) => {
 });
 
 logRouter.get("/settings", (request, response) => {
-    if (!getCookies(request).token) {
+    const userToken = getCookies(request).token;
+    if (!userToken) {
         response.redirect("/login");
         return;
+    }
+
+    const user = getUserFromToken(userToken);
+    let userSettings = null;
+    if (user != null) {
+        userSettings = db.prepare("SELECT * FROM settings WHERE userId = ?").all(user.id)[0];
+    }
+
+    if (userSettings != null) {
+        if (userSettings.darkMode == 1) {
+            response.header("darkMode", "dark");
+        }
+        else {
+            response.header("darkMode", "light");
+        }
+
+        response.header("analyseView", userSettings.analyseView);
     }
 
     response.render('pages/settings');
@@ -82,6 +115,17 @@ logRouter.post("/login", express.json(), async (req, res) => {
     });
 
     res.status(200).json({ message: "Login successful." });
+})
+
+// settings
+logRouter.post("/settings", express.json(), (req, res) => {
+    const usesDarkMode = req.body.darkMode;
+    const analyseView = req.body.analyseView
+
+    const userToken = getCookies(req).token;
+    const user = getUserFromToken(userToken);
+
+    db.prepare("UPDATE settings SET darkMode = ?, analyseView = ? WHERE userId = ?").run(usesDarkMode, analyseView, user.id);
 })
 
 export {logRouter};

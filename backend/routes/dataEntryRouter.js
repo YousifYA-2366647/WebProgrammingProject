@@ -19,11 +19,6 @@ entryRouter.post("/time-entry", checkEntryRequest(), express.json(), (req, res) 
     res.status(201).json({message: "Entry submitted successfully"});
 })
 
-entryRouter.get("/analyse", (req, res) => {
-    const entries = getTimeEntries();
-    res.json(entries);
-})
-
 entryRouter.get("/analyse", (request, response) => {
     if (!getCookies(request).token) {
         response.redirect("/login");

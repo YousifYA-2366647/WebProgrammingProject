@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import {db} from "../../db.js";
+import { getUsers } from "../controllers/userController.js";
 
 
 const tokenKey = "MaeuM";
@@ -15,7 +16,6 @@ export function authorizeRole(role) {
       try {
         const decoded = jwt.verify(token, tokenKey);
         const user = db.prepare("SELECT * FROM users WHERE email = ?").get(decoded.email);
-        console.log(user);
         if (user.role != role) {
           return res.status(403).json({ error: "Forbidden entry" });
         }
@@ -65,4 +65,13 @@ export function getCookies(request) {
     });
   
     return list;
+}
+
+export function getUserFromToken(token) {
+  try {
+    const user = jwt.verify(token, tokenKey);
+    return db.prepare("SELECT * FROM users WHERE email = ?").all(user.email)[0];
+  } catch (error) {
+    return null;
+  }
 }

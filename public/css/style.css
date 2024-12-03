@@ -8,6 +8,11 @@ body {
     margin: 0;
 }
 
+body.dark-mode {
+    background: #1e1e2e;
+    color: #eaeaea;
+}
+
 h1 {
     color: cornflowerblue;
 }
@@ -19,6 +24,10 @@ label {
     margin-bottom: 5px;
     text-align: center;
     color: #41464b;
+}
+
+label.dark-mode {
+    color: #eaeaea;
 }
 
 input {
@@ -76,6 +85,10 @@ nav {
     margin: 0;
     padding: 0;
     background-color: #dddddd;
+}
+
+nav.dark-mode {
+    background-color: #1e1e1e;
 }
 
 nav a {
@@ -182,4 +195,48 @@ ul.calender-body li.active {
 
 ul.calender-body li.clicked {
     outline: 3px solid cornflowerblue;
+}
+
+/* for settings page */
+
+#analyseViewChoicesLabel, #darkModeLabel {
+    font-size: 25px;
+    margin-bottom: 25px;
+    font-weight: bold;
+}
+
+#analyseViewChoices {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto;
+    gap: 80px;
+    margin-bottom: 400px;
+}
+
+#listDivision, #histogramDivision {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto;
+    gap: 30px;
+}
+
+#histogramChoice, #listChoice, #histogramLabel, #listLabel {
+    display: inline-block !important;
+    margin: 0px;
+    padding: 0px;
+    width: auto;
+    height: auto;
+}
+
+#saveOrCancel {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto;
+    gap: 50px;
+}
+
+#save, #cancel {
+    display: inline-block;
+    width: 200px;
+    height: 60px;
 }

@@ -13,6 +13,7 @@ export function InitializeDatabase() {
   db.pragma("foreign_keys = true;");
   db.pragma("temp_store = memory;");
 
+  createSettingsDb();
   prepareUsers();
 
   db.prepare(`CREATE TABLE IF NOT EXISTS time_entries (
@@ -46,12 +47,25 @@ async function prepareUsers() {
 
   const findUser = db.prepare("SELECT id FROM users WHERE name = ?");
   const insertUser = db.prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)");
+  const makeSetting = db.prepare("INSERT INTO settings (userId, darkMode, analyseView) VALUES (?, ?, ?)");
   let password = "a";
   const hashedPassword = await bcrypt.hash(password, 10);
   exampleUsers.forEach((user) => {
     if (!findUser.get(user.name)) {
       const email = user.name + "@gmail.com";
-      insertUser.run(user.name, email, hashedPassword, "admin");
+      const addedUser = insertUser.run(user.name, email, hashedPassword, "admin");
+      makeSetting.run(addedUser.lastInsertRowid, 0, "list");
     }
   });
+}
+
+function createSettingsDb() {
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS settings (
+    userId INTEGER NOT NULL,
+    darkMode INTEGER NOT NULL,
+    analyseView TEXT NOT NULL,
+    FOREIGN KEY (userId) REFERENCES users(id)
+    ) STRICT
+    `).run()
 }
