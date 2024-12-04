@@ -5,7 +5,7 @@
     <%- include("../partials/head", {title: 'Analyse' }) %>
 </head>
 
-<body style="height: 100%;">
+<body>
 
     <%- include('../partials/navbar', {active:'analyse'}); %>
 
@@ -16,7 +16,7 @@
             <div class="grid-item">
                 <ul class="calender-header">
                     <li class="clickable" id="left">&#10094;</li>
-                    <li id="datetext">SHOW DATE</li>
+                    <li id="datetextleft">SHOW DATE</li>
                     <li class="clickable" id="right">&#10095;</li>
                 </ul>
                 <ul class="calender-header">
@@ -36,6 +36,10 @@
             </div>
 
             <div class="grid-item">
+                <label id="datetextright">Select a date</label>
+                <ul id="entry-list" class="entry-list">
+                    <!-- items added in js -->
+                </ul>
 
             </div>
         </div>

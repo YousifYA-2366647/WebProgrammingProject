@@ -1,3 +1,5 @@
+LOCALE = 'en-us'
+
 function calcDate(index) {
     var date = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
 
@@ -24,7 +26,7 @@ function calcDate(index) {
 
 function createCalender(month, year) {
     // set header text
-    document.getElementById("datetext").textContent = currentDate.toLocaleString('en-us', { month: 'long', year: 'numeric' });
+    document.getElementById("datetextleft").textContent = currentDate.toLocaleString(LOCALE, { month: 'long', year: 'numeric' });
 
     // set day text
     for (var i = 0; i < 40; i++) {
@@ -58,7 +60,39 @@ function dateClick(e) {
     selectedIndex = Number(e.target.id);
 
     selectedDate = calcDate(selectedIndex);
-    console.log(selectedDate);
+
+    document.getElementById("datetextright").textContent = selectedDate.toLocaleString(LOCALE, { day: 'numeric', month: "long" });
+
+    // list items
+    entryList = document.getElementById("entry-list");
+    entryList.innerHTML = ""; // lijst leegmaken
+
+    fetch("/get-time-entries", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    }).then(res => {
+        if(res.status != 200){
+            alert(res.statusText);
+            return;
+        }
+        return res.json();
+    }).then(res => {
+        for(i = 0; i < res.length; i++){
+            console.log(res[i]);
+            li = document.createElement("li");
+
+            title = document.createElement("t");
+            title.textContent = res[i].title;
+            li.appendChild(title);
+
+            description = document.createElement("p");
+            description.textContent = res[i].description;
+            li.appendChild(description);
+
+            entryList.appendChild(li);
+
+        }
+    });
 }
 
 
