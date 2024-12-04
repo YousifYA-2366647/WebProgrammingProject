@@ -17,11 +17,11 @@ export function InitializeDatabase() {
 
   db.prepare(`CREATE TABLE IF NOT EXISTS time_entries (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER, 
-    title TEXT,
-    start_time TEXT, 
-    end_time TEXT, 
-    description TEXT,
+    user_id INTEGER NOT NULL, 
+    title TEXT NOT NULL,
+    start_time TEXT NOT NULL, 
+    end_time TEXT NOT NULL, 
+    description TEXT NOT NULL,
     files TEXT[],
     FOREIGN KEY (user_id) REFERENCES users(id)
     )`).run();
@@ -46,14 +46,12 @@ async function prepareUsers() {
 
   const findUser = db.prepare("SELECT id FROM users WHERE name = ?");
   const insertUser = db.prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)");
-  const makeSetting = db.prepare("INSERT INTO settings (userId, darkMode, analyseView) VALUES (?, ?, ?)");
   let password = "a";
   const hashedPassword = await bcrypt.hash(password, 10);
   exampleUsers.forEach((user) => {
     if (!findUser.get(user.name)) {
       const email = user.name + "@gmail.com";
-      const addedUser = insertUser.run(user.name, email, hashedPassword, "admin");
-      makeSetting.run(addedUser.lastInsertRowid, 0, "list");
+      insertUser.run(user.name, email, hashedPassword, "admin");
     }
   });
 }
