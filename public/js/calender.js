@@ -71,26 +71,27 @@ function dateClick(e) {
         method: "GET",
         headers: { "Content-Type": "application/json" }
     }).then(res => {
-        if(res.status != 200){
+        if (res.status != 200) {
             alert(res.statusText);
             return;
         }
         return res.json();
     }).then(res => {
-        for(i = 0; i < res.length; i++){
-            console.log(res[i]);
+        let entries = res.timeEntries;
+
+        for (i = 0; i < entries.length; i++) {
+            console.log(entries[i]);
             li = document.createElement("li");
 
             title = document.createElement("t");
-            title.textContent = res[i].title;
+            title.textContent = entries[i].title;
             li.appendChild(title);
 
             description = document.createElement("p");
-            description.textContent = res[i].description;
+            description.textContent = entries[i].description;
             li.appendChild(description);
 
             entryList.appendChild(li);
-
         }
     });
 }
