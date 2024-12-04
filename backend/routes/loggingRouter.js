@@ -1,8 +1,7 @@
 import express from "express";
-import { db } from "../../db.js";
 import { insertUser, getUsers } from "../controllers/userController.js";
 import { checkRegisterRequest } from "../middleware/formChecking.js";
-import { authorizeRole, createToken, getCookies } from "../middleware/authorization.js";
+import { authorizeRole, createToken, getCookies, tokenKey } from "../middleware/authorization.js";
 
 const logRouter = express.Router();
 

@@ -1,11 +1,11 @@
 import {db} from "../../db.js";
 
-export function getTimeEntries(title="%", start="00-00-0000T00:00", end="12-31-9999T23:59", description="%") {
+export function getTimeEntries(userId, title="%", start="0000-01-01 00:00:00", end="9999-12-31 23:59:59", description="%") {
     return db.prepare(`
         SELECT * 
         FROM time_entries
-        WHERE title LIKE ? AND start_time >= ? AND end_time <= ? AND description LIKE ?
-        `).all(title, start, end, description);
+        WHERE user_id = ? AND title LIKE ? AND start_time >= ? AND end_time <= ? AND description LIKE ?
+        `).all(userId, title, start, end, description);
 };
 
 export function insertEntry(userId, title, start, end, description, files) {
