@@ -85,15 +85,4 @@ logRouter.post("/login", express.json(), async (req, res) => {
     res.status(200).json({ message: "Login successful." });
 })
 
-// settings
-logRouter.post("/settings", express.json(), (req, res) => {
-    const usesDarkMode = req.body.darkMode;
-    const analyseView = req.body.analyseView
-
-    const userToken = getCookies(req).token;
-    const user = getUserFromToken(userToken);
-
-    db.prepare("UPDATE settings SET darkMode = ?, analyseView = ? WHERE userId = ?").run(usesDarkMode, analyseView, user.id);
-})
-
 export {logRouter};
