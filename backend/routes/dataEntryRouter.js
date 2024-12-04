@@ -30,9 +30,11 @@ entryRouter.get("/analyse", (request, response) => {
 });
 
 entryRouter.get("/get-time-entries", (request, response) => {
+    let date = request.query.date;
+
     const userToken = getCookies(request).token;
-    console.log(jwt.verify(userToken, tokenKey).email);
     const user = db.prepare("SELECT * FROM users WHERE email = ?").all(jwt.verify(userToken, tokenKey).email)[0];
+    //const entries = getTimeEntries(user.id, "%", date + " 00:00:00", date + " 23:59:59", "%"); FIXME
     const entries = getTimeEntries(user.id);
 
     response.status(200).json({ timeEntries: entries });

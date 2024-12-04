@@ -1,7 +1,7 @@
 LOCALE = 'en-us'
 
 function calcDate(index) {
-    var date = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    var date = new Date(currentDate.getFullYear(), currentDate.getMonth());
 
     var ofset = date.getDay();
     if (ofset == 0) { // Date gebruikt 0 als zondag
@@ -24,7 +24,7 @@ function calcDate(index) {
 }
 
 
-function createCalender(month, year) {
+function createCalender() {
     // set header text
     document.getElementById("datetextleft").textContent = currentDate.toLocaleString(LOCALE, { month: 'long', year: 'numeric' });
 
@@ -51,6 +51,14 @@ function createCalender(month, year) {
     }
 }
 
+function toURLdateString(date) {
+    s = selectedDate.getFullYear() + '-' + (selectedDate.getMonth() + 1) + '-';
+    if (date.getDate().toString().length == 1) {
+        s += '0';
+    }
+    return s + date.getDate();
+}
+
 
 function dateClick(e) {
     if (selectedIndex) {
@@ -67,7 +75,9 @@ function dateClick(e) {
     entryList = document.getElementById("entry-list");
     entryList.innerHTML = ""; // lijst leegmaken
 
-    fetch("/get-time-entries", {
+    url = "/get-time-entries?date=" + toURLdateString(selectedDate);
+
+    fetch(url, {
         method: "GET",
         headers: { "Content-Type": "application/json" }
     }).then(res => {
@@ -80,7 +90,6 @@ function dateClick(e) {
         let entries = res.timeEntries;
 
         for (i = 0; i < entries.length; i++) {
-            console.log(entries[i]);
             li = document.createElement("li");
 
             title = document.createElement("t");
@@ -100,16 +109,15 @@ function dateClick(e) {
 // month selectors
 document.getElementById("left").addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() - 1);
-    createCalender(currentDate.getMonth() + 1, currentDate.getFullYear());
+    createCalender();
 });
 document.getElementById("right").addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
-    createCalender(currentDate.getMonth() + 1, currentDate.getFullYear());
+    createCalender();
 });
-
 
 const today = new Date();
 var currentDate = new Date();
-createCalender(currentDate.getMonth() + 1, currentDate.getFullYear());
+createCalender();
 var selectedIndex = null;
 var selectedDate = null;
