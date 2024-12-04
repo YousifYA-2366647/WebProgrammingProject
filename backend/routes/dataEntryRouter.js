@@ -25,7 +25,12 @@ entryRouter.get("/analyse", (request, response) => {
         return;
     }
 
+    const userToken = getCookies(request).token;
+    const user = db.prepare("SELECT * FROM users WHERE email = ?").all(jwt.verify(userToken, tokenKey))[0];
+    const entries = getTimeEntries(user.id);
+
     response.render('pages/analyse');
+    response.status(200).json({timeEntries: entries});
 });
 
 entryRouter.get("/input", (request, response) => {
