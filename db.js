@@ -13,7 +13,6 @@ export function InitializeDatabase() {
   db.pragma("foreign_keys = true;");
   db.pragma("temp_store = memory;");
 
-  createSettingsDb();
   prepareUsers();
 
   db.prepare(`CREATE TABLE IF NOT EXISTS time_entries (
@@ -57,15 +56,4 @@ async function prepareUsers() {
       makeSetting.run(addedUser.lastInsertRowid, 0, "list");
     }
   });
-}
-
-function createSettingsDb() {
-  db.prepare(`
-    CREATE TABLE IF NOT EXISTS settings (
-    userId INTEGER NOT NULL,
-    darkMode INTEGER NOT NULL,
-    analyseView TEXT NOT NULL,
-    FOREIGN KEY (userId) REFERENCES users(id)
-    ) STRICT
-    `).run()
 }

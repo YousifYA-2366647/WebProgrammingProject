@@ -1,3 +1,15 @@
+function getCookieValue(cookieName) {
+    const cookies = document.cookie.split('; ');
+
+    for (let i = 0; i < cookies.length; i++) {
+        const [name, value] = cookies[i].split('=');
+        if (name == cookieName) {
+            return value;
+        }
+    }
+    return null;
+}
+
 function saveSettings(event) {
     event.preventDefault();
 
@@ -13,28 +25,33 @@ function saveSettings(event) {
         analyse = "histogram";
     }
 
-    let body = {
-        darkMode: usesDarkMode,
-        analyseView: analyse
-    }
+    document.cookie = `darkMode=${usesDarkMode}; path=/; max-age=31536000`;
+    document.cookie = `analyseView=${analyse}; path=/; max-age=31536000`;
+    
+    window.location.href = "/";
+}
 
-    fetch("/settings", {
-        method: 'POST',
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(body)
-    })
-    .then(response => {
-        if (response.status == 201) {
-            window.location.href = "/";
-            return;
-        }
-        return response.json();
-    })
-    .then(response => {
-        if (response.status == 400) {
-            console.log("error while posting settings");
-        }
-    })
+function setupSettings() {
+    let darkModeCheckbox = document.getElementById("darkModeButton");
+    let darkModeLabel = document.getElementById("darkModeLabel");
+    let histogramCheckbox = document.getElementById("histogramChoice");
+    let listViewCheckbox = document.getElementById("listChoice");
+
+    if (getCookieValue('darkMode') == 1) {
+        darkModeCheckbox.checked = true;
+        darkModeLabel.textContent = "Toggle Light Mode";
+        const elements = document.querySelectorAll('*');
+
+        elements.forEach((element) => {
+            element.classList.toggle('dark-mode');
+        })
+    }
+    if (getCookieValue('analyseView') == "list") {
+            listViewCheckbox.checked = true;
+    }
+    else if (getCookieValue('analyseView') == "histogram") {
+            histogramCheckbox.checked = true;
+    }
 }
 
 function main() {
@@ -45,6 +62,7 @@ function main() {
 
     darkModeCheckbox.checked = histogramCheckbox.checked = listViewCheckbox.checked = false;
 
+    setupSettings();
 
     darkModeCheckbox.addEventListener("change", function() {
         const elements = document.querySelectorAll('*');
@@ -87,35 +105,6 @@ function main() {
     cancelButton.addEventListener("click", function(event) {
         event.preventDefault();
         window.location.href = "/";
-    })
-
-    
-    fetch(window.location.href, {
-        method: 'GET',
-    })
-    .then(response => {
-        const darkMode = response.headers.get("darkMode");
-
-        if (darkMode == "dark") { 
-            darkModeCheckbox.checked = true;
-            darkModeLabel.textContent = "Toggle Light Mode";
-            const elements = document.querySelectorAll('*');
-
-            elements.forEach((element) => {
-                element.classList.toggle('dark-mode');
-            })
-        }
-
-        const analyseView = response.headers.get("analyseView");
-        if (analyseView == "list") {
-            listViewCheckbox.checked = true;
-        }
-        else {
-            histogramCheckbox.checked = true;
-        }
-    })
-    .catch(error => {
-        console.error("error fething page:", error);
     })
 }
 

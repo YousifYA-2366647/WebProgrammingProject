@@ -66,12 +66,3 @@ export function getCookies(request) {
   
     return list;
 }
-
-export function getUserFromToken(token) {
-  try {
-    const user = jwt.verify(token, tokenKey);
-    return db.prepare("SELECT * FROM users WHERE email = ?").all(user.email)[0];
-  } catch (error) {
-    return null;
-  }
-}

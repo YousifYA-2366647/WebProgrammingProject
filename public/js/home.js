@@ -1,21 +1,23 @@
-function main() {
-    fetch(window.location.href, {
-        method: 'GET',
-    })
-    .then(response => {
-        const darkMode = response.headers.get("config");
+function getCookieValue(cookieName) {
+    const cookies = document.cookie.split('; ');
 
-        if (darkMode == "dark") { 
-            const elements = document.querySelectorAll('*');
-
-            elements.forEach((element) => {
-                element.classList.toggle('dark-mode');
-            })
+    for (let i = 0; i < cookies.length; i++) {
+        const [name, value] = cookies[i].split('=');
+        if (name == cookieName) {
+            return value;
         }
-    })
-    .catch(error => {
-        console.error("error fething page:", error);
-    })
+    }
+    return null;
+}
+
+function main() {
+    if (getCookieValue('darkMode') == 1) {
+        const elements = document.querySelectorAll('*');
+
+        elements.forEach((element) => {
+            element.classList.toggle('dark-mode');
+        })
+    }
 }
 
 document.addEventListener("DOMContentLoaded", main);
