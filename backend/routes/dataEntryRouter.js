@@ -42,4 +42,26 @@ entryRouter.get("/input", (request, response) => {
     response.render('pages/input');
 });
 
+entryRouter.get("/get-time-entries", (request, response) => {
+    try {
+        let date = request.query.date;
+        console.log(date);
+
+        const userToken = getCookies(request).token;
+        const decodedToken = jwt.verify(userToken, tokenKey);
+        const user = db.prepare("SELECT * FROM users WHERE email = ?").all(decodedToken.email)[0];
+
+        let entries = JSON.stringify("");
+        if (!date) {
+            entries = getTimeEntries(user.id);
+        }
+        else {
+            entries = getTimeEntries(user.id, "%", date.concat(" 00:00:00"), date.concat(" 23:59:59"), "%");
+        }
+        response.status(200).json({timeEntries: entries});
+    } catch (err) {
+        response.status(401).json({error: err});
+    }
+})
+
 export {entryRouter};
