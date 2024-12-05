@@ -58,7 +58,7 @@ app.post("/login", logRouter);
 // time entry handling
 app.post("/time-entry", entryRouter);
 
-app.get("/analyse", entryRouter);
+app.get("/get-time-entries", entryRouter);
 
 app.get("/get-time-entries", entryRouter);
 

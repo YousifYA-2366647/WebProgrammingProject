@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { checkEntryRequest } from "../middleware/formChecking.js";
 import { getCookies, tokenKey } from "../middleware/authorization.js";
 import { insertEntry, getTimeEntries } from "../controllers/timeEntryController.js";
+import { db } from "../../db.js";
 
 const entryRouter = express.Router();
 
@@ -16,7 +17,7 @@ entryRouter.post("/time-entry", checkEntryRequest(), express.json(), (req, res) 
 
     insertEntry(userId, title, start, end, description, files);
 
-    res.status(201).json({message: "Entry submitted successfully"});
+    res.status(201).json({ message: "Entry submitted successfully" });
 })
 
 entryRouter.get("/analyse", (request, response) => {
