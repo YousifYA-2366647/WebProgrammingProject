@@ -31,13 +31,18 @@ entryRouter.get("/analyse", (request, response) => {
 
 entryRouter.get("/get-time-entries", (request, response) => {
     let date = request.query.date;
-
+    console.log(date);
     const userToken = getCookies(request).token;
     const user = db.prepare("SELECT * FROM users WHERE email = ?").all(jwt.verify(userToken, tokenKey).email)[0];
-    //const entries = getTimeEntries(user.id, "%", date + " 00:00:00", date + " 23:59:59", "%"); FIXME
-    const entries = getTimeEntries(user.id);
 
-    response.status(200).json({ timeEntries: entries });
+    if (!date) {
+        const entries = getTimeEntries(user.id);
+        response.status(200).json({ timeEntries: entries });
+    }
+    else {
+        const entries = getTimeEntries(user.id, "%", date + "T00:00:00", date + "T23:59:59", "%");
+        response.status(200).json({ timeEntries: entries });
+    }
 });
 
 entryRouter.get("/input", (request, response) => {
