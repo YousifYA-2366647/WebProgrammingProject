@@ -26,12 +26,7 @@ entryRouter.get("/analyse", (request, response) => {
         return;
     }
 
-    const userToken = getCookies(request).token;
-    const user = db.prepare("SELECT * FROM users WHERE email = ?").all(jwt.verify(userToken, tokenKey))[0];
-    const entries = getTimeEntries(user.id);
-
     response.render('pages/analyse');
-    response.status(200).json({timeEntries: entries});
 });
 
 entryRouter.get("/input", (request, response) => {
@@ -57,8 +52,10 @@ entryRouter.get("/get-time-entries", (request, response) => {
             entries = getTimeEntries(user.id);
         }
         else {
-            entries = getTimeEntries(user.id, "%", date.concat(" 00:00:00"), date.concat(" 23:59:59"), "%");
+            entries = getTimeEntries(user.id, "%", date.concat("T00:00:00"), date.concat("T23:59:59"), "%");
         }
+
+        console.log(entries);
         response.status(200).json({timeEntries: entries});
     } catch (err) {
         response.status(401).json({error: err});

@@ -167,8 +167,13 @@ ul.calender-header li {
     word-spacing: 10px;
 }
 
+ul.calender-header.dark-mode li {
+    background-color: #1e1e1e;
+}
+
 ul.calender-header li.clickable:hover {
     color: white;
+    cursor: pointer;
 }
 
 ul.calender-body {
@@ -187,6 +192,7 @@ ul.calender-body li {
 ul.calender-body li.clickable:hover {
     background-color: cornflowerblue;
     color: white;
+    cursor: pointer;
 }
 
 ul.calender-body li.active {

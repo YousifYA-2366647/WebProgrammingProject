@@ -40,11 +40,6 @@ function setupSettings() {
     if (getCookieValue('darkMode') == 1) {
         darkModeCheckbox.checked = true;
         darkModeLabel.textContent = "Toggle Light Mode";
-        const elements = document.querySelectorAll('*');
-
-        elements.forEach((element) => {
-            element.classList.toggle('dark-mode');
-        })
     }
     if (getCookieValue('analyseView') == "list") {
             listViewCheckbox.checked = true;
