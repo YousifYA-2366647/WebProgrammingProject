@@ -25,6 +25,10 @@ function login(event) {
                 document.getElementById("error").textContent = res.error;
                 return;
             }
+
+            document.cookie = `darkMode=${res.settings.usesDarkMode}; path=/; max-age=31536000`;
+            document.cookie = `analyseView=${res.settings.analyseView}; path=/; max-age=31536000`;
+
             window.location.href = '/';
         });
 }

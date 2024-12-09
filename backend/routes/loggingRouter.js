@@ -1,7 +1,10 @@
 import express from "express";
+import jwt from "jsonwebtoken";
+import { db } from "../../db.js";
 import { insertUser, getUsers } from "../controllers/userController.js";
 import { checkRegisterRequest } from "../middleware/formChecking.js";
 import { authorizeRole, createToken, getCookies, tokenKey } from "../middleware/authorization.js";
+import { getUserSettings, updateUserSettings } from "../controllers/settingsController.js";
 
 const logRouter = express.Router();
 
@@ -22,14 +25,6 @@ logRouter.get("/register", (request, response) => {
     response.render('pages/register');
 });
 
-logRouter.get("/settings", (request, response) => {
-    if (!getCookies(request).token) {
-        response.redirect("/login");
-        return;
-    }
-
-    response.render('pages/settings');
-});
 
 logRouter.get("/logout", (request, response) => {
     // delete token on logout
@@ -39,6 +34,8 @@ logRouter.get("/logout", (request, response) => {
         sameSite: "strict",
         expires: new Date(Date.now()),
     });
+
+
 
     response.redirect("/login");
 });
@@ -81,7 +78,12 @@ logRouter.post("/login", express.json(), async (req, res) => {
         expires: new Date(Date.now() + 10800000), // 3hr
     });
 
-    res.status(200).json({ message: "Login successful." });
+    const user = db.prepare("SELECT * FROM users WHERE email = ?").all(email)[0];
+    const userSettings = getUserSettings(user.id);
+
+    console.log(userSettings);
+
+    res.status(200).json({ message: "Login successful.", settings: userSettings });
 })
 
 export {logRouter};

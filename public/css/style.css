@@ -130,6 +130,16 @@ textarea.input-form {
     border-radius: 5px;
 }
 
+textarea.input-form.dark-mode {
+    background-color: #41464b;
+    color: white;
+}
+
+input.input-form.dark-mode {
+    background-color: #41464b;
+    color: white;
+}
+
 button.input-form {
     display: block;
     margin: auto;

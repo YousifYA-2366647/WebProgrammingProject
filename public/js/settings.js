@@ -25,6 +25,16 @@ function saveSettings(event) {
         analyse = "histogram";
     }
 
+    const settingsBody = {
+        darkMode: usesDarkMode,
+        analyseView: analyse
+    }
+
+    fetch("/settings", {
+            method: "POST",
+            body: settingsBody
+    })
+
     document.cookie = `darkMode=${usesDarkMode}; path=/; max-age=31536000`;
     document.cookie = `analyseView=${analyse}; path=/; max-age=31536000`;
     
