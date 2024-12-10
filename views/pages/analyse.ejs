@@ -11,7 +11,13 @@
 
         <h1>Analyse data</h1>
 
-        <div class="grid-container">
+        <select id="options">
+            <option>List</option>
+            <option>Calender</option>
+            <option>Histogram</option>
+        </select>
+
+        <div class="grid-container" id="calender">
 
             <div class="grid-item">
                 <ul class="calender-header">
@@ -37,14 +43,26 @@
 
             <div class="grid-item">
                 <label id="datetextright">Select a date</label>
-                <ul id="entry-list" class="entry-list">
+                <ul id="calender-entry-list" class="entry-list">
                     <!-- items added in js -->
                 </ul>
 
             </div>
         </div>
 
+        <div id="list">
+            <ul id="list-entry-list" class="entry-list">
+                <!-- items added in js -->
+            </ul>
+        </div>
+
+        <div id="graph">
+            todo
+        </div>
+
         <script src="js/calender.js"></script>
+        <script src="js/list.js"></script>
+        <script src="js/viewselector.js"></script>
 </body>
 
 </html>

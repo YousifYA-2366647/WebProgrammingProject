@@ -14,6 +14,7 @@ body.dark-mode {
 }
 
 h1 {
+    padding-top: 15px;
     color: cornflowerblue;
 }
 
@@ -38,6 +39,10 @@ input {
     box-sizing: border-box;
     border: 1px solid #ddd;
     border-radius: 5px;
+}
+
+select {
+    margin: 10px;
 }
 
 button {
@@ -79,7 +84,12 @@ li {
     float: left;
 }
 
+
+/* navbar */
+
 nav {
+    position: fixed;
+    top: 0;
     width: 100%;
     overflow: hidden;
     margin: 0;
@@ -110,6 +120,7 @@ nav a.active {
     background-color: cornflowerblue;
     color: white;
 }
+
 
 /* input form input.html */
 
@@ -147,6 +158,7 @@ button.input-form {
     padding-left: 10mm;
     padding-right: 10mm;
 }
+
 
 /* calender */
 
@@ -228,6 +240,8 @@ ul.entry-list li p {
     margin: 0 0 10px 0;
     white-space: pre;
 }
+
+
 /* for settings page */
 
 #analyseViewChoicesLabel,

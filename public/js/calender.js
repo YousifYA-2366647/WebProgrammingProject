@@ -1,4 +1,4 @@
-LOCALE = 'en-us'
+const LOCALE = 'nl-be'
 
 function calcDate(index) {
     var date = new Date(currentDate.getFullYear(), currentDate.getMonth());
@@ -72,7 +72,7 @@ function dateClick(e) {
     document.getElementById("datetextright").textContent = selectedDate.toLocaleString(LOCALE, { day: 'numeric', month: "long" });
 
     // list items
-    entryList = document.getElementById("entry-list");
+    entryList = document.getElementById("calender-entry-list");
     entryList.innerHTML = ""; // lijst leegmaken
 
     url = "/get-time-entries?date=" + toURLdateString(selectedDate);
@@ -95,6 +95,10 @@ function dateClick(e) {
             title = document.createElement("t");
             title.textContent = entries[i].title;
             li.appendChild(title);
+
+            time = document.createElement("p");
+            time.textContent = entries[i].start_time.substring(11) + ' - '+ entries[i].end_time.substring(11);
+            li.appendChild(time);
 
             description = document.createElement("p");
             description.textContent = entries[i].description;
