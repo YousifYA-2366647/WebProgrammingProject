@@ -12,6 +12,5 @@ export function insertEntry(userId, title, start, end, description, files) {
     const insertEntry = db.prepare(`
         INSERT INTO time_entries (user_id, title, start_time, end_time, description, files) 
         VALUES (?, ?, ?, ?, ?, ?)
-      `);
-      const result = insertEntry.run(userId, title, start, end, description, files);
+      `).run(userId, title, start, end, description, files);
 };

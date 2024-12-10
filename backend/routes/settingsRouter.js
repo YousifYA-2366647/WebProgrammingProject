@@ -24,7 +24,7 @@ settingsRouter.post("/settings", (request, response) => {
 
     updateUserSettings(user.id, usesDarkmode, analyseView);
 
-    response.status(200);
+    response.status(200).json();
 })
 
 export {settingsRouter}

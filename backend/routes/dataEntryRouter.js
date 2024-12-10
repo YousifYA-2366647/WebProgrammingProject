@@ -1,21 +1,27 @@
 import express from "express";
 import jwt from "jsonwebtoken";
+import multer from "multer";
 import { checkEntryRequest } from "../middleware/formChecking.js";
 import { getCookies, tokenKey } from "../middleware/authorization.js";
 import { insertEntry, getTimeEntries } from "../controllers/timeEntryController.js";
 import { db } from "../../db.js";
 
 const entryRouter = express.Router();
+const upload = multer({dest: "uploads/"});
 
-entryRouter.post("/time-entry", checkEntryRequest(), express.json(), (req, res) => {
+entryRouter.post("/time-entry", upload.any(), checkEntryRequest(), express.json(), (req, res) => {
     const userId = jwt.verify(getCookies(req).token, tokenKey).userId;
     const title = req.body.title;
     const start = req.body.start;
     const end = req.body.end;
     const description = req.body.description;
-    const files = JSON.stringify(req.body.files);
+    let files = [];
 
-    insertEntry(userId, title, start, end, description, files);
+    for (const file of req.files) {
+        files.push(file.path);
+    }
+    
+    insertEntry(userId, title, start, end, description, JSON.stringify(files));
 
     res.status(201).json({ message: "Entry submitted successfully" });
 })

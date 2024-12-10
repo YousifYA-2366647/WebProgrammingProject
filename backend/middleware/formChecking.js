@@ -24,8 +24,14 @@ export function checkEntryRequest() {
         title: Joi.string().min(1).max(50).required(),
         start: Joi.string().isoDate().required(),
         end: Joi.string().isoDate().required(),
-        description: Joi.string().max(1024),
-        files: Joi.object()
+        description: Joi.string().max(1024).optional(),
+        photos: Joi.array().items(
+            Joi.object({
+                originalname: Joi.string().required(),
+                mimetype: Joi.string().valid("image/jpeg", "image/png").required(),
+                buffer: Joi.binary().required(),
+            })
+        ).optional(),
       })
   
       const { error } = entryForm.validate(req.body);

@@ -3,18 +3,20 @@ function sendInput(event) {
 
     error = document.getElementById("error");
 
-    let body = {
-        title: document.getElementById("title").value,
-        start: document.getElementById("starttime").value,
-        end: document.getElementById("endtime").value,
-        description: document.getElementById("description").value,
-        files: document.getElementById("file").files,
-    };
+    const formData = new FormData();
+    formData.append("title", document.getElementById("title").value);
+    formData.append("start", document.getElementById("starttime").value);
+    formData.append("end", document.getElementById("endtime").value);
+    formData.append("description", document.getElementById("description").value);
+    
+    const fileArray = document.getElementById("file").files;
+    for (let i = 0; i < fileArray.length; i++) {
+        formData.append("photos", fileArray[i]);
+    }
 
     fetch("/time-entry", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
+        body: formData
     })
         .then(res => {
             succes = (res.status == 201);
