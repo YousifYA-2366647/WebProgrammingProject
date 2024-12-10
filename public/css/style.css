@@ -242,7 +242,7 @@ ul.entry-list li p {
     grid-template-columns: auto auto;
     grid-template-rows: auto;
     gap: 80px;
-    margin-bottom: 400px;
+    margin-bottom: 100px;
 }
 
 #listDivision,
@@ -268,7 +268,7 @@ ul.entry-list li p {
     display: grid;
     grid-template-columns: auto auto;
     grid-template-rows: auto;
-    gap: 50px;
+    gap: 10px;
 }
 
 #save,

@@ -5,5 +5,6 @@ export function getUserSettings(user_id) {
 }
 
 export function updateUserSettings(user_id, usesDarkMode, analyseView) {
+    console.log(JSON.stringify({darkMode: usesDarkMode, analyse: analyseView, userId: user_id}));
     db.prepare("UPDATE settings SET usesDarkMode = ?, analyseView = ? WHERE user_id = ?").run(usesDarkMode, analyseView, user_id);
 }

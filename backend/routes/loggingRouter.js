@@ -1,10 +1,9 @@
 import express from "express";
-import jwt from "jsonwebtoken";
 import { db } from "../../db.js";
 import { insertUser, getUsers } from "../controllers/userController.js";
 import { checkRegisterRequest } from "../middleware/formChecking.js";
-import { authorizeRole, createToken, getCookies, tokenKey } from "../middleware/authorization.js";
-import { getUserSettings, updateUserSettings } from "../controllers/settingsController.js";
+import { authorizeRole, createToken, getCookies } from "../middleware/authorization.js";
+import { getUserSettings } from "../controllers/settingsController.js";
 
 const logRouter = express.Router();
 
