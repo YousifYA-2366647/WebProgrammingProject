@@ -26,12 +26,19 @@ fetch("/get-time-entries", {
 
         date = document.createElement("p");
         dateOptions = { day: 'numeric', month: 'numeric', year: 'numeric' };
-        date.textContent = startDate.toLocaleDateString(LOCALE, dateOptions);
+        beginText = startDate.toLocaleDateString(LOCALE, dateOptions);
+        endText = endDate.toLocaleDateString(LOCALE, dateOptions);
+        date.textContent = beginText;
+        if (beginText != endText) {
+            // twee datums als begin en eind datum anders zijn
+            date.textContent += ' - ' + endText;
+        }
+
         li.appendChild(date);
 
         time = document.createElement("p");
         timeOptions = { hour: 'numeric', minute: 'numeric' }
-        time.textContent = startDate.toLocaleTimeString(LOCALE, timeOptions) + ' - ' + endDate.toLocaleTimeString(LOCALE, timeOptions);
+        time.textContent = startDate.toLocaleString(LOCALE, timeOptions) + ' - ' + endDate.toLocaleTimeString(LOCALE, timeOptions);
         li.appendChild(time);
 
         description = document.createElement("p");
