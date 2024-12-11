@@ -1,13 +1,25 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import multer from "multer";
+import path from "path";
 import { checkEntryRequest } from "../middleware/formChecking.js";
 import { getCookies, tokenKey } from "../middleware/authorization.js";
 import { insertEntry, getTimeEntries } from "../controllers/timeEntryController.js";
 import { db } from "../../db.js";
 
 const entryRouter = express.Router();
-const upload = multer({dest: "uploads/"});
+const storage = multer.diskStorage({
+    destination: (req, file, callback) => {
+        callback(null, "public/tmp/uploads/")
+    },
+    filename: (req, file, callback) => {
+        const fileType = path.extname(file.originalname);
+        const fileName = `${Date.now()}-${Math.round(Math.random()*1E9)}${fileType}`;
+        callback(null, fileName);
+    }
+});
+
+const upload = multer({ storage: storage });
 
 entryRouter.post("/time-entry", upload.any(), checkEntryRequest(), express.json(), (req, res) => {
     const userId = jwt.verify(getCookies(req).token, tokenKey).userId;
@@ -18,6 +30,7 @@ entryRouter.post("/time-entry", upload.any(), checkEntryRequest(), express.json(
     let files = [];
 
     for (const file of req.files) {
+        console.log(file.mimetype);
         files.push(file.path);
     }
     
