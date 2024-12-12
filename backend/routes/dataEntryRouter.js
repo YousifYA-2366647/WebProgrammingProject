@@ -90,6 +90,8 @@ entryRouter.get("/get-entries-per-day", (request, response) => {
 
     const entries = getTimeEntryPerDay(user.id, day);
 
+    console.log(entries['COUNT(*)']);
+
     response.status(200).json({amountOfEntries: entries['COUNT(*)']});
 })
 
