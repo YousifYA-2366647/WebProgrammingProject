@@ -4,7 +4,7 @@ import multer from "multer";
 import path from "path";
 import { checkEntryRequest } from "../middleware/formChecking.js";
 import { getCookies, tokenKey } from "../middleware/authorization.js";
-import { insertEntry, getTimeEntries } from "../controllers/timeEntryController.js";
+import { insertEntry, getTimeEntries, getTimeEntryPerDay } from "../controllers/timeEntryController.js";
 import { db } from "../../db.js";
 
 const entryRouter = express.Router();
@@ -79,6 +79,18 @@ entryRouter.get("/get-time-entries", (request, response) => {
     } catch (err) {
         response.status(401).json({error: err});
     }
+});
+
+entryRouter.get("/get-entries-per-day", (request, response) => {
+    const day = request.query.date;
+
+    const userToken = getCookies(request).token;
+    const decodedToken = jwt.verify(userToken, tokenKey);
+    const user = db.prepare("SELECT * FROM users WHERE email = ?").all(decodedToken.email)[0];
+
+    const entries = getTimeEntryPerDay(user.id, day);
+
+    response.status(200).json({amountOfEntries: entries['COUNT(*)']});
 })
 
 export {entryRouter};

@@ -4,7 +4,7 @@ export function getTimeEntries(userId, title="%", start="0000-01-01 00:00:00", e
     return db.prepare(`
         SELECT * 
         FROM time_entries
-        WHERE user_id = ? AND title LIKE ? AND start_time >= ? AND end_time <= ? AND description LIKE ?
+        WHERE user_id = ? AND title LIKE ? AND start_time >= ? AND description LIKE ?
         `).all(userId, title, start, end, description);
 };
 
@@ -14,3 +14,13 @@ export function insertEntry(userId, title, start, end, description, files) {
         VALUES (?, ?, ?, ?, ?, ?)
       `).run(userId, title, start, end, description, files);
 };
+
+export function getTimeEntryPerDay(userId, date) {
+    const start = date.concat("T00:00:00");
+
+    return db.prepare(`
+        SELECT COUNT(*)
+        FROM time_entries
+        WHERE user_id = ? AND title LIKE ? AND (start_time >= ?) AND description LIKE ?
+        `).get(userId, "%", start, "%");
+}
