@@ -254,6 +254,16 @@ ul.entry-list li p {
 }
 
 
+.week-selector.dark-mode {
+    background-color: #1e1e1e;
+    color: white;
+}
+
+#calender-month.dark-mode option {
+    background-color: #1e1e1e;
+    color: white;
+}
+
 /* Histogram */
 
 .histogram {
@@ -269,11 +279,21 @@ ul.entry-list li p {
     flex-direction: row;
 }
 
+.week-selector.dark-mode {
+    color: white;
+    background-color: #1e1e1e;
+}
+
 .week-selector select {
     width: fit-content;
     background-color: transparent;
     border: none;
     height: 35px;
+}
+
+.week-selector.dark-mode select {
+    color: white;
+    background-color: #1e1e1e;
 }
 
 .week-selector input {
@@ -283,12 +303,23 @@ ul.entry-list li p {
     height: 35px;
 }
 
+.week-selector.dark-mode input {
+    color: white;
+    background-color: #1e1e1e;
+}
+
 .week-selector button {
     margin: 0 0 0 0;
     height: 35px;
     width: fit-content;
     font-size: small;
 }
+
+.week-selector.dark-mode button {
+    color: white;
+    background-color: #1e1e1e;
+}
+
 /* for settings page */
 
 #analyseViewChoicesLabel,
