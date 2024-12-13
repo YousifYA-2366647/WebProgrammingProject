@@ -42,6 +42,16 @@ input {
 }
 
 select {
+    display: block;
+    margin-bottom: 15px;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: white;
+}
+
+select.viewselector {
     margin: 10px;
 }
 
@@ -60,6 +70,7 @@ button {
 button:hover {
     background-color: #002ead;
     transition: 0.7s;
+    cursor: pointer;
 }
 
 button:active {
@@ -172,7 +183,8 @@ div.grid-container {
 }
 
 div.grid-item {
-    border: 1px solid black;
+    border-radius: 5px;
+    border: 1px solid #ddd;
 }
 
 ul.calender-header {
@@ -242,6 +254,45 @@ ul.entry-list li p {
 }
 
 
+/* Histogram */
+
+.histogram {
+    width: 70%;
+}
+
+.histogram-header {
+    
+}
+
+.week-selector {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: fit-content;
+    display: inline-flex;
+    flex-direction: row;
+}
+
+.week-selector select {
+    width: fit-content;
+    background-color: transparent;
+    border: none;
+    height: 35px;
+}
+
+.week-selector input {
+    width: fit-content;
+    background-color: transparent;
+    border: none;
+    height: 35px;
+}
+
+.week-selector button {
+    margin: 0 0 0 0;
+    height: 35px;
+    width: fit-content;
+    font-size: small;
+}
 /* for settings page */
 
 #analyseViewChoicesLabel,

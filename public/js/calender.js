@@ -25,9 +25,6 @@ function calcDate(index) {
 
 
 function createCalender() {
-    // set header text
-    document.getElementById("datetextleft").textContent = currentDate.toLocaleString(LOCALE, { month: 'long', year: 'numeric' });
-
     // set day text
     for (var i = 0; i < 40; i++) {
         var li = document.getElementById(i);
@@ -97,7 +94,7 @@ function dateClick(e) {
             li.appendChild(title);
 
             time = document.createElement("p");
-            time.textContent = entries[i].start_time.substring(11) + ' - '+ entries[i].end_time.substring(11);
+            time.textContent = entries[i].start_time.substring(11) + ' - ' + entries[i].end_time.substring(11);
             li.appendChild(time);
 
             description = document.createElement("p");
@@ -110,18 +107,26 @@ function dateClick(e) {
 }
 
 
-// month selectors
-document.getElementById("left").addEventListener('click', () => {
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    createCalender();
-});
-document.getElementById("right").addEventListener('click', () => {
-    currentDate.setMonth(currentDate.getMonth() + 1);
-    createCalender();
-});
 
 const today = new Date();
 var currentDate = new Date();
+
+const yearSelector = document.getElementById("calender-year");
+const monthSelector = document.getElementById("calender-month");
+yearSelector.value = currentDate.getFullYear();
+monthSelector.selectedIndex = currentDate.getMonth();
 createCalender();
+
+// vars om geselecteerde dag op de kalender bij te houden
 var selectedIndex = null;
 var selectedDate = null;
+
+
+monthSelector.addEventListener('change', () => {
+    currentDate.setMonth(monthSelector.selectedIndex);
+    createCalender();
+});
+yearSelector.addEventListener('change', () => {
+    currentDate.setFullYear(yearSelector.value);
+    createCalender();
+});

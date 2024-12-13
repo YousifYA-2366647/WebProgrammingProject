@@ -1,0 +1,9 @@
+<select id=<%=id%>>
+    <% var monthNames=[ "January" , "February" , "March" , "April" , "May" , "June" , "July" , "August" , "September"
+        , "October" , "November" , "December" ]; 
+        for(m in monthNames){ %>
+        <option>
+            <%=monthNames[m]%>
+        </option>
+        <% } %>
+</select>

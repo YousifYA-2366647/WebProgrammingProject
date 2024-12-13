@@ -11,20 +11,28 @@
 
         <h1>Analyse data</h1>
 
-        <select id="options">
+        <select id="options" class="viewselector">
             <option>List</option>
             <option>Calender</option>
             <option>Histogram</option>
         </select>
 
-        <div class="grid-container" id="calender">
 
+        <!-- LIST -->
+        <div id="list">
+            <ul id="list-entry-list" class="entry-list">
+                <!-- items added in js -->
+            </ul>
+        </div>
+
+
+        <!-- CALENDER -->
+        <div class="grid-container" id="calender">
             <div class="grid-item">
-                <ul class="calender-header">
-                    <li class="clickable" id="left">&#10094;</li>
-                    <li id="datetextleft">SHOW DATE</li>
-                    <li class="clickable" id="right">&#10095;</li>
-                </ul>
+                <div class="week-selector" style="background-color: #ddd;">
+                    <%- include("../partials/monthselector", { id:'calender-month' }) %>
+                        <input type="number" min="1900" max="2100" value="1900" id="calender-year">
+                </div>
                 <ul class="calender-header">
                     <li>Mo</li>
                     <li>Tu</li>
@@ -40,25 +48,31 @@
                         <% } -%>
                 </ul>
             </div>
-
             <div class="grid-item">
                 <label id="datetextright">Select a date</label>
                 <ul id="calender-entry-list" class="entry-list">
                     <!-- items added in js -->
                 </ul>
-
             </div>
         </div>
 
-        <div id="list">
-            <ul id="list-entry-list" class="entry-list">
-                <!-- items added in js -->
-            </ul>
-        </div>
 
-        <div id="graph">
+        <!-- HISTOGRAM -->
+        <div id="graph" class="histogram">
+            <form class="week-selector" id="week-selector">
+                <select id="graph-week">
+                    <% for(var i=1; i<53; i++) {%>
+                        <option>
+                            <%="Week " + i%>
+                            </option>
+                            <% } -%>
+                    </select>
+                    <input type="number" min="1900" max="2100" value="2024" id="graph-year">
+                                <button type="submit">Show</button>
+            </form>
             <canvas id="histogram"></canvas>
         </div>
+
 
         <script src="https://cdn.jsdelivr.net/npm/chart.js">//histogram api</script>
         <script src="js/calender.js"></script>
