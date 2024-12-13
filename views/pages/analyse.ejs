@@ -59,7 +59,7 @@
 
         <!-- HISTOGRAM -->
         <div id="graph" class="histogram">
-            <form class="week-selector" id="week-selector">
+            <div class="week-selector" id="week-selector">
                 <select id="graph-week">
                     <% for(var i=1; i<53; i++) {%>
                         <option>
@@ -68,8 +68,7 @@
                             <% } -%>
                     </select>
                     <input type="number" min="1900" max="2100" value="2024" id="graph-year">
-                                <button type="submit">Show</button>
-            </form>
+                </div>
             <canvas id="histogram"></canvas>
         </div>
 
