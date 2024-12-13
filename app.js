@@ -64,6 +64,8 @@ app.get("/get-time-entries", entryRouter);
 
 app.get("/get-time-entries", entryRouter);
 
+app.get("/get-entries-per-day", entryRouter);
+
 // Middleware for unknown routes
 // Must be last in pipeline
 app.use((request, response, next) => {
