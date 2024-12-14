@@ -27,7 +27,7 @@ document.getElementById("graph-year").addEventListener('change', () => {
     console.log(document.getElementById("graph-year").value);
 });
 
-fetch("/get-entries-per-day?from=2024-12-09&to=2024-12-15", {
+fetch("/get-amount-of-entries?from=2024-12-09&to=2024-12-15", {
     method: 'get',
     headers: { "Content-Type": "application/json" }
 }).then(res => {

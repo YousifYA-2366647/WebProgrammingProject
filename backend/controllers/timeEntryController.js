@@ -20,16 +20,29 @@ export function insertEntry(userId, title, start, end, description, files) {
       `).run(userId, title, start, end, description, files);
 };
 
-export function getTimeEntryPerDay(userId, date, title = "%", description = "%") {
-    const start = date.concat("T00:00:00");
-    const end = date.concat("T23:59:59");
+export function getAmountOfEntries(userId, start="0000-01-01", end="9999-12-31", title = "%", description = "%") {
+    let startDate = new Date(start);
+    let endDate = new Date(end);
 
-    return db.prepare(`
-        SELECT COUNT(*)
-        FROM time_entries
-        WHERE user_id = ?
-        AND title LIKE ?
-        AND (start_time <= ?) AND (end_time >= ?)
-        AND description LIKE ?
-        `).get(userId, title, end, start, description);
+
+    var listOfEntries = {}
+    while (startDate <= endDate) {
+        const dateString = startDate.toISOString().substring(0, 10)
+
+        start = dateString.concat("T00:00:00");
+        end = dateString.concat("T23:59:59");
+
+        listOfEntries[dateString] = db.prepare(`
+            SELECT COUNT(*)
+            FROM time_entries
+            WHERE user_id = ?
+            AND title LIKE ?
+            AND (start_time <= ?) AND (end_time >= ?)
+            AND description LIKE ?
+            `).get(userId, title, end, start, description)['COUNT(*)'];
+
+        startDate.setDate(startDate.getDate()+1);
+    }
+
+    return listOfEntries;
 }
