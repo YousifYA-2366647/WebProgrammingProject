@@ -49,7 +49,7 @@ function prepareNotificationTable() {
     preview TEXT NOT NULL,
     date TEXT NOT NULL,
     is_read INTEGER NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (sender_id) REFERENCES users(id),
     FOREIGN KEY (receiver_id) REFERENCES users(id),
     FOREIGN KEY (entry_id) REFERENCES time_entries(id)
     )
