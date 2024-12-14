@@ -93,9 +93,16 @@ function dateClick(e) {
             title.textContent = entries[i].title;
             li.appendChild(title);
 
-            time = document.createElement("p");
-            time.textContent = entries[i].start_time.substring(11) + ' - ' + entries[i].end_time.substring(11);
-            li.appendChild(time);
+            date = document.createElement("p");
+            dateOptions = { day: 'numeric', month: 'numeric', hour: '2-digit', minute:'2-digit'};
+            beginText = (new Date(entries[i].start_time)).toLocaleString(LOCALE, dateOptions);
+            endText = (new Date(entries[i].end_time)).toLocaleString(LOCALE, dateOptions);
+            date.textContent = beginText;
+            if (beginText != endText) {
+                // twee datums als begin en eind datum anders zijn
+                date.textContent += ' - ' + endText;
+            }
+            li.appendChild(date);
 
             description = document.createElement("p");
             description.textContent = entries[i].description;
