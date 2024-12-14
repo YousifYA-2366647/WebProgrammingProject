@@ -94,8 +94,8 @@ logRouter.get("/get-employees", (request, response) => {
 logRouter.post("/add-employee", (request, response) => {
     const employeesToAdd = request.body.employees;
 
-    const employeesList = employeesToAdd.split(",");
-    employeesList.forEach((employeeId) => {
+    employeesToAdd.forEach((employeeEmail) => {
+        const employeeId = getUsers("%", employeeEmail)[0].id;
         addEmployeeToAdmin(getCookies(request).token, employeeId);
     })
 
