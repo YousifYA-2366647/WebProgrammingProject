@@ -25,21 +25,11 @@ fetch("/get-time-entries", {
         endDate = new Date(entries[i].end_time);
 
         date = document.createElement("p");
-        dateOptions = { day: 'numeric', month: 'numeric', year: 'numeric' };
+        dateOptions = { day: 'numeric', month: 'numeric',year:'numeric', hour: '2-digit', minute:'2-digit'};
         beginText = startDate.toLocaleDateString(LOCALE, dateOptions);
         endText = endDate.toLocaleDateString(LOCALE, dateOptions);
-        date.textContent = beginText;
-        if (beginText != endText) {
-            // twee datums als begin en eind datum anders zijn
-            date.textContent += ' - ' + endText;
-        }
-
+        date.textContent = beginText + ' - ' + endText;
         li.appendChild(date);
-
-        time = document.createElement("p");
-        timeOptions = { hour: 'numeric', minute: 'numeric' }
-        time.textContent = startDate.toLocaleString(LOCALE, timeOptions) + ' - ' + endDate.toLocaleTimeString(LOCALE, timeOptions);
-        li.appendChild(time);
 
         description = document.createElement("p");
         description.textContent = entries[i].description;
