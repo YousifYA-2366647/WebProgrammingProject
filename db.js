@@ -34,6 +34,7 @@ function prepareSettingsTable() {
     user_id INTEGER NOT NULL,
     usesDarkMode INTEGER NOT NULL,
     analyseView TEXT NOT NULL,
+    isAdmin INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
     ) STRICT`).run();
 }
@@ -63,7 +64,6 @@ async function prepareUsers() {
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
-    role TEXT NOT NULL,
     employees TEXT NOT NULL
     ) STRICT`).run();
 
@@ -75,18 +75,18 @@ async function prepareUsers() {
   ];
 
   const findUser = db.prepare("SELECT id FROM users WHERE name = ?");
-  const insertUser = db.prepare("INSERT INTO users (name, email, password, role, employees) VALUES (?, ?, ?, ?, ?)");
+  const insertUser = db.prepare("INSERT INTO users (name, email, password, employees) VALUES (?, ?, ?, ?)");
 
-  const makeUserSettings = db.prepare("INSERT INTO settings (user_id, usesDarkMode, analyseView) VALUES (?, ?, ?)")
+  const makeUserSettings = db.prepare("INSERT INTO settings (user_id, usesDarkMode, analyseView, isAdmin) VALUES (?, ?, ?, ?)")
 
   let password = "a";
   const hashedPassword = await bcrypt.hash(password, 10);
   exampleUsers.forEach((user) => {
     if (!findUser.get(user.name)) {
       const email = user.name + "@gmail.com";
-      insertUser.run(user.name, email, hashedPassword, "admin", "");
+      insertUser.run(user.name, email, hashedPassword, "");
       const currentUser = findUser.all(user.name)[0];
-      makeUserSettings.run(currentUser.id, 0, "list");
+      makeUserSettings.run(currentUser.id, 0, "list", 1);
     }
   });
 }

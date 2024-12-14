@@ -3,13 +3,11 @@ import { tokenKey } from "../middleware/authorization.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-export async function insertUser(username, email, password, role, employees) {
+export async function insertUser(username, email, password, employees) {
     const hashedPassword = await bcrypt.hash(password, 10);
   
-    const insertUser = db.prepare("INSERT INTO users (name, email, password, role, employees) VALUES (?, ?, ?, ?, ?)")
-    const result = insertUser.run(username, email, hashedPassword, role, employees);
-
-    db.prepare("INSERT INTO settings (user_id, usesDarkMode, analyseView) VALUES (?, ?, ?)").run(result.lastInsertRowid, 0, "list");
+    const insertUser = db.prepare("INSERT INTO users (name, email, password, employees) VALUES (?, ?, ?, ?)")
+    const result = insertUser.run(username, email, hashedPassword, employees);
     return result;
 };
 
