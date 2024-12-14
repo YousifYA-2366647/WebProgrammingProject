@@ -4,7 +4,7 @@ import multer from "multer";
 import path from "path";
 import { checkEntryRequest } from "../middleware/formChecking.js";
 import { getCookies, tokenKey } from "../middleware/authorization.js";
-import { insertEntry, getTimeEntries, getTimeEntryPerDay } from "../controllers/timeEntryController.js";
+import { insertEntry, getTimeEntries, getAmountOfEntries } from "../controllers/timeEntryController.js";
 import { db } from "../../db.js";
 
 const entryRouter = express.Router();
@@ -81,27 +81,17 @@ entryRouter.get("/get-time-entries", (request, response) => {
     }
 });
 
-entryRouter.get("/get-entries-per-day", (request, response) => {
+entryRouter.get("/get-amount-of-entries", (request, response) => {
     const start = request.query.from;
     const end = request.query.to;
-
-    var startDate = new Date(start);
-    const endDate = new Date(end);
-    endDate.setDate(endDate.getDate() + 1);
 
     const userToken = getCookies(request).token;
     const decodedToken = jwt.verify(userToken, tokenKey);
     const user = db.prepare("SELECT * FROM users WHERE email = ?").all(decodedToken.email)[0];
 
-    var list = {};
-    while (startDate < endDate) {
-        var dateString = startDate.toISOString().substring(0, 10);
-        var entry = getTimeEntryPerDay(user.id, dateString)
-        list[dateString] = (entry['COUNT(*)'])
-        startDate.setDate(startDate.getDate() + 1);
-    }
+    const entries = getAmountOfEntries(user.id, start, end);
 
-    response.status(200).json(list);
+    response.status(200).json(entries);
 })
 
 export { entryRouter };

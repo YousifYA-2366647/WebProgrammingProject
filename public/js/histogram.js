@@ -78,7 +78,7 @@ document.getElementById("graph-week").addEventListener('change', () => {
     var begin = dateList[document.getElementById("graph-week").selectedIndex][0].toISOString().substring(0, 10);
     var end = dateList[document.getElementById("graph-week").selectedIndex][1].toISOString().substring(0, 10);
 
-    const url = "get-entries-per-day?from="+begin + "&to=" + end;
+    const url = "get-amount-of-entries?from="+begin + "&to=" + end;
     console.log(url);
 
 
@@ -111,7 +111,7 @@ document.getElementById("graph-year").addEventListener('change', () => {
     document.getElementById("graph-week").dispatchEvent(new Event("change"));
 });
 
-fetch("/get-entries-per-day?from=2024-12-09&to=2024-12-15", {
+fetch("/get-amount-of-entries?from=2024-12-09&to=2024-12-15", {
     method: 'get',
     headers: { "Content-Type": "application/json" }
 }).then(res => {
