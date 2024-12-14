@@ -1,9 +1,16 @@
 <select id=<%=id%>>
-    <% var monthNames=[ "January" , "February" , "March" , "April" , "May" , "June" , "July" , "August" , "September"
-        , "October" , "November" , "December" ]; 
+  <% 
+        // month strings extracten met locale
+        d = new Date(1, 0, 1);
+        var monthNames = [];
+        for(i = 0; i<12; i++){
+            d.setMonth(i);
+            monthNames.push(d.toLocaleString(locale, {month: 'long'}));
+        }
+
         for(m in monthNames){ %>
-        <option>
-            <%=monthNames[m]%>
-        </option>
-        <% } %>
+  <option>
+    <%=monthNames[m]%>
+  </option>
+  <% } %>
 </select>

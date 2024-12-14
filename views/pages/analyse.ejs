@@ -27,10 +27,10 @@
 
 
         <!-- CALENDER -->
-        <div class="grid-container" id="calender">
+        <div class="grid-container" id="calender" style="display: none;">
             <div class="grid-item">
-                <div class="week-selector">
-                    <%- include("../partials/monthselector", { id:'calender-month' }) %>
+                <div class="week-selector" style="background-color: #ddd;">
+                    <%- include("../partials/monthselector", { id:'calender-month', locale: 'en-us' }) %>
                         <input type="number" min="1900" max="2100" value="1900" id="calender-year">
                 </div>
                 <ul class="calender-header">

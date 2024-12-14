@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, callback) => {
         const fileType = path.extname(file.originalname);
-        const fileName = `${Date.now()}-${Math.round(Math.random()*1E9)}${fileType}`;
+        const fileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${fileType}`;
         callback(null, fileName);
     }
 });
@@ -33,7 +33,7 @@ entryRouter.post("/time-entry", upload.any(), checkEntryRequest(), express.json(
         console.log(file.mimetype);
         files.push(file.path);
     }
-    
+
     insertEntry(userId, title, start, end, description, JSON.stringify(files));
 
     res.status(201).json({ message: "Entry submitted successfully" });
@@ -50,8 +50,8 @@ entryRouter.get("/analyse", (request, response) => {
 
 entryRouter.get("/input", (request, response) => {
     if (!getCookies(request).token) {
-    response.redirect("/login");
-    return;
+        response.redirect("/login");
+        return;
     }
 
     response.render('pages/input');
@@ -75,24 +75,33 @@ entryRouter.get("/get-time-entries", (request, response) => {
         }
 
         console.log(entries);
-        response.status(200).json({timeEntries: entries});
+        response.status(200).json({ timeEntries: entries });
     } catch (err) {
-        response.status(401).json({error: err});
+        response.status(401).json({ error: err });
     }
 });
 
 entryRouter.get("/get-entries-per-day", (request, response) => {
-    const day = request.query.date;
+    const start = request.query.from;
+    const end = request.query.to;
+
+    var startDate = new Date(start);
+    const endDate = new Date(end);
+    endDate.setDate(endDate.getDate() + 1);
 
     const userToken = getCookies(request).token;
     const decodedToken = jwt.verify(userToken, tokenKey);
     const user = db.prepare("SELECT * FROM users WHERE email = ?").all(decodedToken.email)[0];
 
-    const entries = getTimeEntryPerDay(user.id, day);
+    var list = {};
+    while (startDate < endDate) {
+        var dateString = startDate.toISOString().substring(0, 10);
+        var entry = getTimeEntryPerDay(user.id, dateString)
+        list[dateString] = (entry['COUNT(*)'])
+        startDate.setDate(startDate.getDate() + 1);
+    }
 
-    console.log(entries['COUNT(*)']);
-
-    response.status(200).json({amountOfEntries: entries['COUNT(*)']});
+    response.status(200).json(list);
 })
 
-export {entryRouter};
+export { entryRouter };

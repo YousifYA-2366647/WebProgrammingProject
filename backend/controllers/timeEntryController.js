@@ -1,27 +1,16 @@
-import {db} from "../../db.js";
+import { db } from "../../db.js";
 
-export function getTimeEntries(userId, title="%", start="0000-01-01 00:00:00", end="9999-12-31 23:59:59", description="%") {
+export function getTimeEntries(userId, title = "%", start = "0000-01-01 00:00:00", end = "9999-12-31 23:59:59", description = "%") {
     return db.prepare(`
         SELECT * 
         FROM time_entries
         WHERE user_id = ? 
         AND title LIKE ? 
 
-        AND (
-            (start_time >= ? AND end_time <= ?) 
-            OR (
-                end_time >= ? 
-                AND (start_time >= ? AND start_time <= ?)
-            ) 
-            OR (start_time <= ? AND end_time >= ?) 
-            OR (
-                start_time <= ? 
-                AND (end_time >= ? AND end_time <= ?)
-            )
-        ) 
+        AND (start_time <= ?) AND (end_time >= ?)
 
         AND description LIKE ?
-        `).all(userId, title, start, end, end, start, end, start, end, start, start, end, description);
+        `).all(userId, title, end, start, description);
 };
 
 export function insertEntry(userId, title, start, end, description, files) {
@@ -31,12 +20,16 @@ export function insertEntry(userId, title, start, end, description, files) {
       `).run(userId, title, start, end, description, files);
 };
 
-export function getTimeEntryPerDay(userId, date) {
+export function getTimeEntryPerDay(userId, date, title = "%", description = "%") {
     const start = date.concat("T00:00:00");
+    const end = date.concat("T23:59:59");
 
     return db.prepare(`
         SELECT COUNT(*)
         FROM time_entries
-        WHERE user_id = ? AND title LIKE ? AND (start_time >= ?) AND description LIKE ?
-        `).get(userId, "%", start, "%");
+        WHERE user_id = ?
+        AND title LIKE ?
+        AND (start_time <= ?) AND (end_time >= ?)
+        AND description LIKE ?
+        `).get(userId, title, end, start, description);
 }
