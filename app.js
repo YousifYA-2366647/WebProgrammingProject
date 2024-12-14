@@ -3,6 +3,7 @@ import { InitializeDatabase } from "./db.js";
 import { logRouter } from "./backend/routes/loggingRouter.js";
 import { entryRouter } from "./backend/routes/dataEntryRouter.js"
 import { settingsRouter } from "./backend/routes/settingsRouter.js";
+import { notificationRouter } from "./backend/routes/notificationRouter.js";
 
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
@@ -65,6 +66,9 @@ app.get("/get-time-entries", entryRouter);
 app.get("/get-time-entries", entryRouter);
 
 app.get("/get-amount-of-entries", entryRouter);
+
+// notifications
+app.get("/notifications", notificationRouter);
 
 // Middleware for unknown routes
 // Must be last in pipeline

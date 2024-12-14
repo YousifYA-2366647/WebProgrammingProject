@@ -14,6 +14,7 @@ export function InitializeDatabase() {
   db.pragma("temp_store = memory;");
 
   prepareSettingsTable();
+  prepareNotificationTable();
   prepareUsers();
 
   db.prepare(`CREATE TABLE IF NOT EXISTS time_entries (
@@ -37,6 +38,23 @@ function prepareSettingsTable() {
     ) STRICT`).run();
 }
 
+function prepareNotificationTable() {
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS notifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    receiver_id INTEGER NOT NULL,
+    entry_id INTEGER,
+    title TEXT NOT NULL,
+    preview TEXT NOT NULL,
+    date TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (receiver_id) REFERENCES users(id),
+    FOREIGN KEY (entry_id) REFERENCES time_entries(id)
+    )
+    `).run()
+}
+
 
 async function prepareUsers() {
   db.prepare(`CREATE TABLE IF NOT EXISTS users (
@@ -44,7 +62,8 @@ async function prepareUsers() {
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
-    role TEXT NOT NULL
+    role TEXT NOT NULL,
+    employees TEXT NOT NULL
     ) STRICT`).run();
 
   const exampleUsers = [
@@ -55,7 +74,7 @@ async function prepareUsers() {
   ];
 
   const findUser = db.prepare("SELECT id FROM users WHERE name = ?");
-  const insertUser = db.prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)");
+  const insertUser = db.prepare("INSERT INTO users (name, email, password, role, employees) VALUES (?, ?, ?, ?, ?)");
 
   const makeUserSettings = db.prepare("INSERT INTO settings (user_id, usesDarkMode, analyseView) VALUES (?, ?, ?)")
 
@@ -64,7 +83,7 @@ async function prepareUsers() {
   exampleUsers.forEach((user) => {
     if (!findUser.get(user.name)) {
       const email = user.name + "@gmail.com";
-      insertUser.run(user.name, email, hashedPassword, "admin");
+      insertUser.run(user.name, email, hashedPassword, "admin", "");
       const currentUser = findUser.all(user.name)[0];
       makeUserSettings.run(currentUser.id, 0, "list");
     }

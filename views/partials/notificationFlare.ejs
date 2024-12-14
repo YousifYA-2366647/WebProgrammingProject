@@ -1,0 +1,27 @@
+<div id=<%=divId%> class="notificationFlare">
+    <div id="notificationDetails">
+        <button id="notificationTitle">Jori made a new entry!</button>
+        <p id="notificationPreview">Eten</p>
+        <p id="notificationDate">3 December 2024</p>
+    </div>
+    <div id="actionButtons">
+        <button id="acceptNotification" onclick="acceptNotification('<%=divId%>')">✓</button>
+        <button id="deleteNotification" onclick="removeNotification('<%=divId%>')">🗑</button>
+    </div>
+</div>
+
+<script>
+    function removeNotification(id) {
+        const notification = document.getElementById(id);
+        if (notification) {
+            notification.parentNode.removeChild(notification);
+        }
+    }
+
+    function acceptNotification(id) {
+        const notification = document.getElementById(id);
+        if (notification) {
+            notification.style = "background-color: green;";
+        }
+    }
+</script>

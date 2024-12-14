@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import {db} from "../../db.js";
-import { getUsers } from "../controllers/userController.js";
 
 
 const tokenKey = "MaeuM";

@@ -67,6 +67,34 @@ button {
     font-size: 16px;
 }
 
+div.roleSelector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 10px;
+}
+
+#adminButton, #userButton {
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: none;
+    color: black;
+    background-color: darkgrey;
+    width: 100%;
+    font-size: 16px;
+}
+
+#adminButton:hover, #userButton:hover {
+    background-color: grey;
+    transition: 0.7s;
+    cursor: pointer;
+}
+
+#adminButton:disabled, #userButton:disabled {
+    background-color: #41464b;
+}
+
 button:hover {
     background-color: #002ead;
     transition: 0.7s;
@@ -368,4 +396,83 @@ ul.entry-list li p {
     display: inline-block;
     width: 200px;
     height: 60px;
+}
+
+/* notifications */
+#totalNotifications {
+    background-color: green;
+    color: white;
+    font-size: 14px;
+    border-radius: 3px;
+}
+
+#unreadNotifications {
+    background-color: red;
+    color: white;
+    border-radius: 3px;
+}
+
+#notificationScroller {
+    overflow-y: visible,
+}
+
+.notificationFlare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1000px;
+    border: solid black 2px;
+    background-color: #dddddd;
+}
+
+.notificationFlare.dark-mode {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1000px;
+    border: solid black 2px;
+    background-color: #41464b;
+}
+
+#notificationDetails {
+    display: grid;
+    grid-template-rows: 1 1 1;
+    margin-left: 10px;
+}
+
+#actionButtons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+#notificationTitle {
+    background-color: transparent;
+    color: black;
+    font-size: 20px;
+}
+
+#notificationTitle.dark-mode {
+    background-color: transparent;
+    color: white;
+    font-size: 20px;
+}
+
+#notificationTitle:hover {
+    text-decoration: underline;
+}
+
+#notificationPreview, #notificationDate {
+    font-size: 13px;
+    margin: 0;
+}
+
+#acceptNotification, #deleteNotification {
+    background-color: darkgrey;
+    width: 50px;
+    height: 40px;
+}
+
+#acceptNotification:hover, #deleteNotification:hover {
+    background-color: #41464b;
 }

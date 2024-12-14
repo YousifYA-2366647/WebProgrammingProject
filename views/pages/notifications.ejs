@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("../partials/head", {title: 'Notifications'}) %>
+</head>
+
+<body>
+
+    <%- include('../partials/navbar', {active: 'notifications'}); %>
+
+    <h1>Notifications</h1>
+
+    <div id="notificationScroller">
+        <% for (let i = 1; i <= 16; i++) { %>
+            <%- include('../partials/notificationFlare', {divId: 'notification' + i}); %>
+        <% } %>
+    </div>
+
+    <script src="js/notifications.js"></script>
+</body>
+
+</html>

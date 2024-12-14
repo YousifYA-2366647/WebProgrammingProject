@@ -5,6 +5,7 @@ function createAccount(event) {
         username: document.getElementById("username").value,
         email: document.getElementById("email").value,
         password: document.getElementById("password").value,
+        role: (document.getElementById("userButton").disabled?"user": "admin")
     };
 
     if (!body.username || !body.email || !body.password) {
@@ -40,5 +41,26 @@ function createAccount(event) {
         });
 }
 
-form = document.getElementById("form");
-form.addEventListener('submit', createAccount);
+window.onload = function() {
+    let form = document.getElementById("form");
+    form.addEventListener('submit', createAccount);
+
+    let adminButton = document.getElementById("adminButton");
+    let userButton = document.getElementById("userButton");
+
+    adminButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (userButton.disabled == true) {
+            userButton.disabled = false;
+        }
+        adminButton.disabled = true;
+    });
+
+    userButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (adminButton.disabled == true) {
+            adminButton.disabled = false;
+        }
+        userButton.disabled = true;
+    })
+}

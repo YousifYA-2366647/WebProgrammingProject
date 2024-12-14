@@ -1,12 +1,13 @@
 import { db } from "../../db.js";
+import { tokenKey } from "../middleware/authorization.js";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-export async function insertUser(username, email, password, role) {
+export async function insertUser(username, email, password, role, employees) {
     const hashedPassword = await bcrypt.hash(password, 10);
   
-    const insertUser = db.prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)")
-    const result = insertUser.run(username, email, hashedPassword, role);
-    console.log(result);
+    const insertUser = db.prepare("INSERT INTO users (name, email, password, role, employees) VALUES (?, ?, ?, ?, ?)")
+    const result = insertUser.run(username, email, hashedPassword, role, employees);
     return result;
 };
 
@@ -16,3 +17,21 @@ export function getUsers(username="%", email="%") {
         FROM users
         WHERE username LIKE ? AND email LIKE ?`).all(username, email);
 };
+
+export function addEmployeeToAdmin(requestToken, employeeId) {
+    const admin = db.prepare(`
+        SELECT *
+        FROM users
+        WHERE email = ?
+        `).run(jwt.verify(requestToken, tokenKey).email);
+
+    let employees = admin.employees;
+    if (employees == "") {
+        employees += employeeId.toString();
+    }
+    else {
+        employees += "," + employeeId.toString();
+    }
+
+    db.prepare("UPDATE users SET employees = ? WHERE user_id = ?").run(employees, admin.id);
+}
