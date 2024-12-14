@@ -1,6 +1,6 @@
 import express from "express";
 import { db } from "../../db.js";
-import { insertUser, getUsers } from "../controllers/userController.js";
+import { insertUser, getUsers, getEmployees, getUserFromToken, addEmployeeToAdmin } from "../controllers/userController.js";
 import { checkRegisterRequest } from "../middleware/formChecking.js";
 import { authorizeRole, createToken, getCookies } from "../middleware/authorization.js";
 import { getUserSettings } from "../controllers/settingsController.js";
@@ -83,6 +83,23 @@ logRouter.post("/login", express.json(), async (req, res) => {
     console.log(userSettings);
 
     res.status(200).json({ message: "Login successful.", settings: userSettings });
+})
+
+logRouter.get("/get-employees", (request, response) => {
+    const user = getUserFromToken(getCookies(request).token);
+
+    response.status(200).json({employees: getEmployees(user.id)});
+})
+
+logRouter.post("/add-employee", (request, response) => {
+    const employeesToAdd = request.body.employees;
+
+    const employeesList = employeesToAdd.split(",");
+    employeesList.forEach((employeeId) => {
+        addEmployeeToAdmin(getCookies(request).token, employeeId);
+    })
+
+    response.status(200);
 })
 
 export {logRouter};

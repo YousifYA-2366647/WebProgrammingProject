@@ -38,6 +38,18 @@ export function addEmployeeToAdmin(requestToken, employeeId) {
     db.prepare("UPDATE users SET employees = ? WHERE user_id = ?").run(employees, admin.id);
 }
 
+export function getEmployees(userId) {
+    const employees = db.prepare("SELECT employees FROM users WHERE id = ?").get(userId).employees;
+    let employeeList = employees.split(",");
+
+    let listOfEmployees = []
+    employeeList.forEach((employeeId) => {
+        listOfEmployees.push(db.prepare("SELECT * FROM users WHERE id = ?").all(employeeId)[0]);
+    })
+
+    return listOfEmployees;
+}
+
 export function getUserFromToken(userToken) {
     const user = db.prepare("SELECT * FROM users WHERE email = ?").all(jwt.verify(userToken, tokenKey).email)[0];
 
