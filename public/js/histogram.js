@@ -11,7 +11,7 @@ function getWeekdayStringList() {
 }
 
 function create_chart(data) {
-    new Chart(document.getElementById('histogram'), {
+    chart = new Chart(document.getElementById('histogram'), {
         type: 'bar',
         data: {
             labels: getWeekdayStringList(),
@@ -32,7 +32,9 @@ function create_chart(data) {
 }
 
 function updateChart(data) {
-    var chart = Chart.getChart(document.getElementById('histogram'))
+    if (chart == null) {
+        create_chart(data);
+    }
     chart.data.datasets[0].data = data;
     chart.update();
 }
@@ -66,21 +68,24 @@ function creatWeekOptions(year) {
         var option = document.createElement("option");
         option.text = maandag + ' - ' + zondag;
         select.add(option);
-
         dateList.push(week);
+
+        const today = new Date();
+        if (week[0] < today && today < week[1]) {
+            document.getElementById("graph-week").selectedIndex = dateList.length - 1;
+        }
     }
 
     return dateList;
 }
+
 
 // week selector
 document.getElementById("graph-week").addEventListener('change', () => {
     var begin = dateList[document.getElementById("graph-week").selectedIndex][0].toISOString().substring(0, 10);
     var end = dateList[document.getElementById("graph-week").selectedIndex][1].toISOString().substring(0, 10);
 
-    const url = "get-amount-of-entries?from="+begin + "&to=" + end;
-    console.log(url);
-
+    const url = "get-amount-of-entries?from=" + begin + "&to=" + end;
 
     fetch(url, {
         method: 'get',
@@ -100,6 +105,7 @@ document.getElementById("graph-week").addEventListener('change', () => {
     });
 });
 
+
 // maand selector
 document.getElementById("graph-year").addEventListener('change', () => {
     //geselecteerde week behouden
@@ -111,21 +117,8 @@ document.getElementById("graph-year").addEventListener('change', () => {
     document.getElementById("graph-week").dispatchEvent(new Event("change"));
 });
 
-fetch("/get-amount-of-entries?from=2024-12-09&to=2024-12-15", {
-    method: 'get',
-    headers: { "Content-Type": "application/json" }
-}).then(res => {
-    if (res.status != 200) {
-        alert(res.statusText);
-        return;
-    }
-    return res.json();
-}).then(res => {
-    list = [];
-    for (i in res) {
-        list.push(res[i]);
-    }
-    create_chart(list);
-});
+document.getElementById("graph-year").value = (new Date()).getFullYear();
 
+var chart = null;
 var dateList = creatWeekOptions(document.getElementById("graph-year").value);
+document.getElementById("graph-week").dispatchEvent(new Event("change"));
