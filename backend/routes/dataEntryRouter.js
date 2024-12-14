@@ -6,6 +6,7 @@ import { checkEntryRequest } from "../middleware/formChecking.js";
 import { getCookies, tokenKey } from "../middleware/authorization.js";
 import { insertEntry, getTimeEntries, getAmountOfEntries } from "../controllers/timeEntryController.js";
 import { db } from "../../db.js";
+import { getUserFromToken } from "../controllers/userController.js";
 
 const entryRouter = express.Router();
 const storage = multer.diskStorage({
@@ -62,9 +63,7 @@ entryRouter.get("/get-time-entries", (request, response) => {
         let date = request.query.date;
         console.log(date);
 
-        const userToken = getCookies(request).token;
-        const decodedToken = jwt.verify(userToken, tokenKey);
-        const user = db.prepare("SELECT * FROM users WHERE email = ?").all(decodedToken.email)[0];
+        const user = getUserFromToken(getCookies(request).token);
 
         let entries = JSON.stringify("");
         if (!date) {
@@ -85,9 +84,7 @@ entryRouter.get("/get-amount-of-entries", (request, response) => {
     const start = request.query.from;
     const end = request.query.to;
 
-    const userToken = getCookies(request).token;
-    const decodedToken = jwt.verify(userToken, tokenKey);
-    const user = db.prepare("SELECT * FROM users WHERE email = ?").all(decodedToken.email)[0];
+    const user = getUserFromToken(getCookies(request).token);
 
     const entries = getAmountOfEntries(user.id, start, end);
 

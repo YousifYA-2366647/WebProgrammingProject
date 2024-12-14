@@ -35,3 +35,9 @@ export function addEmployeeToAdmin(requestToken, employeeId) {
 
     db.prepare("UPDATE users SET employees = ? WHERE user_id = ?").run(employees, admin.id);
 }
+
+export function getUserFromToken(userToken) {
+    const user = db.prepare("SELECT * FROM users WHERE email = ?").all(jwt.verify(userToken, tokenKey).email)[0];
+
+    return user;
+}

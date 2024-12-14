@@ -42,12 +42,13 @@ function prepareNotificationTable() {
   db.prepare(`
     CREATE TABLE IF NOT EXISTS notifications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
+    sender_id INTEGER NOT NULL,
     receiver_id INTEGER NOT NULL,
     entry_id INTEGER,
     title TEXT NOT NULL,
     preview TEXT NOT NULL,
     date TEXT NOT NULL,
+    is_read INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (receiver_id) REFERENCES users(id),
     FOREIGN KEY (entry_id) REFERENCES time_entries(id)

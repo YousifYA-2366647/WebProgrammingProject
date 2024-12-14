@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { getCookies, tokenKey } from "../middleware/authorization.js";
 import { db } from "../../db.js";
 import { updateUserSettings } from "../controllers/settingsController.js";
+import { getUserFromToken } from "../controllers/userController.js";
 
 const settingsRouter = express.Router();
 
@@ -19,8 +20,7 @@ settingsRouter.post("/settings", (request, response) => {
     const usesDarkmode = request.body.darkMode;
     const analyseView = request.body.analyseView;
 
-    const userToken = getCookies(request).token;
-    const user = db.prepare("SELECT * FROM users WHERE email = ?").all(jwt.verify(userToken, tokenKey).email)[0];
+    const user = getUserFromToken(getCookies(request).token);
 
     updateUserSettings(user.id, usesDarkmode, analyseView);
 

@@ -70,6 +70,10 @@ app.get("/get-amount-of-entries", entryRouter);
 // notifications
 app.get("/notifications", notificationRouter);
 
+app.get("/get-notifications", notificationRouter);
+
+app.post("/read-notification", notificationRouter);
+
 // Middleware for unknown routes
 // Must be last in pipeline
 app.use((request, response, next) => {

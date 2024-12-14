@@ -460,6 +460,7 @@ ul.entry-list li p {
 
 #notificationTitle:hover {
     text-decoration: underline;
+    cursor: pointer;
 }
 
 #notificationPreview, #notificationDate {
@@ -475,4 +476,14 @@ ul.entry-list li p {
 
 #acceptNotification:hover, #deleteNotification:hover {
     background-color: #41464b;
+}
+
+#acceptNotification.dark-mode, #deleteNotification.dark-mode {
+    background-color: darkgrey;
+    width: 50px;
+    height: 40px;
+}
+
+#acceptNotification.dark-mode:hover, #deleteNotification.dark-mode:hover {
+    background-color: #2e3033;
 }
