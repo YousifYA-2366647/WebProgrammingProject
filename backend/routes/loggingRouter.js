@@ -43,7 +43,7 @@ logRouter.get("/logout", (request, response) => {
 // register
 logRouter.post("/register", express.json(), checkRegisterRequest(), async (req, res) => {
     try {
-        const result = await insertUser(req.body.username, req.body.email, req.body.password, req.body.role, []);
+        const result = await insertUser(req.body.username, req.body.email, req.body.password, req.body.role, "");
         res.status(201).json({ id: result.lastInsertRowid });
 
     } catch (err) {
