@@ -8,6 +8,8 @@ export async function insertUser(username, email, password, role, employees) {
   
     const insertUser = db.prepare("INSERT INTO users (name, email, password, role, employees) VALUES (?, ?, ?, ?, ?)")
     const result = insertUser.run(username, email, hashedPassword, role, employees);
+
+    db.prepare("INSERT INTO settings (user_id, usesDarkMode, analyseView) VALUES (?, ?, ?)").run(result.lastInsertRowid, 0, "list");
     return result;
 };
 
