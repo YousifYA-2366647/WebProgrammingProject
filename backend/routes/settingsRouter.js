@@ -13,7 +13,7 @@ settingsRouter.get("/settings", (request, response) => {
         return;
     }
 
-    response.render('pages/settings');
+    response.render('pages/settings', {isAdmin: true});
 });
 
 settingsRouter.post("/settings", (request, response) => {

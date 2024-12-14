@@ -93,14 +93,12 @@ logRouter.get("/get-employees", (request, response) => {
 })
 
 logRouter.post("/add-employee", (request, response) => {
-    const employeesToAdd = request.body.employees;
+    let employeeEmail = request.body.email;
 
-    employeesToAdd.forEach((employeeEmail) => {
-        const employeeId = getUsers("%", employeeEmail)[0].id;
-        addEmployeeToAdmin(getCookies(request).token, employeeId);
-    })
+    const employeeId = getUsers("%", employeeEmail)[0].id;
+    addEmployeeToAdmin(getCookies(request).token, employeeId);
 
-    response.status(200);
+    response.status(200).json();
 })
 
 export {logRouter};

@@ -77,7 +77,7 @@ app.post("/read-notification", notificationRouter);
 // employees
 app.get("/get-employees", logRouter);
 
-app.post("/add-employees", logRouter);
+app.post("/add-employee", logRouter);
 
 // Middleware for unknown routes
 // Must be last in pipeline

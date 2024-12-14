@@ -39,7 +39,7 @@ function saveSettings(event) {
             document.cookie = `darkMode=${usesDarkMode}; path=/; max-age=31536000`;
             document.cookie = `analyseView=${analyse}; path=/; max-age=31536000`;
         }
-    
+
         window.location.href = "/";
     })
 }
@@ -55,11 +55,33 @@ function setupSettings() {
         darkModeLabel.textContent = "Toggle Light Mode";
     }
     if (getCookieValue('analyseView') == "list") {
-            listViewCheckbox.checked = true;
+        listViewCheckbox.checked = true;
     }
     else if (getCookieValue('analyseView') == "histogram") {
-            histogramCheckbox.checked = true;
+        histogramCheckbox.checked = true;
     }
+}
+
+function addEmployee(event) {
+    event.preventDefault();
+
+    let responseTxt = document.getElementById("response");
+
+    let body = { email: document.getElementById("emailInput").value, };
+    fetch("/add-employee", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+    }).then(res => {
+        if (res.status == 200) {
+            responseTxt.textContent = "request sent";
+        } else {
+            responseTxt.textContent = res.statusText;
+        }
+        setTimeout(function () {
+            responseTxt.textContent = "";
+        }, 3000);
+    });
 }
 
 function main() {
@@ -72,7 +94,7 @@ function main() {
 
     setupSettings();
 
-    darkModeCheckbox.addEventListener("change", function() {
+    darkModeCheckbox.addEventListener("change", function () {
         const elements = document.querySelectorAll('*');
 
         elements.forEach((element) => {
@@ -87,7 +109,7 @@ function main() {
         }
     })
 
-    histogramCheckbox.addEventListener("change", function() {
+    histogramCheckbox.addEventListener("change", function () {
         if (listViewCheckbox.checked) {
             listViewCheckbox.checked = false;
         }
@@ -96,21 +118,23 @@ function main() {
         }
     });
 
-    listViewCheckbox.addEventListener("change", function() {
+    listViewCheckbox.addEventListener("change", function () {
         if (histogramCheckbox.checked) {
             histogramCheckbox.checked = false;
         }
-        if (!listViewCheckbox.checked)  {
+        if (!listViewCheckbox.checked) {
             listViewCheckbox.checked = true;
         }
     });
 
+    let requestForm = document.getElementById("addEmployee");
+    requestForm.addEventListener("submit", addEmployee);
 
     let saveButton = document.getElementById("save");
     let cancelButton = document.getElementById("cancel");
 
     saveButton.addEventListener("click", saveSettings);
-    cancelButton.addEventListener("click", function(event) {
+    cancelButton.addEventListener("click", function (event) {
         event.preventDefault();
         window.location.href = "/";
     })
