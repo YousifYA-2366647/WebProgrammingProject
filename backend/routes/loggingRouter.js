@@ -96,6 +96,7 @@ logRouter.post("/add-employee", (request, response) => {
     let employeeEmail = request.body.email;
 
     const employeeId = getUsers("%", employeeEmail)[0].id;
+
     addEmployeeToAdmin(getCookies(request).token, employeeId);
 
     response.status(200).json();

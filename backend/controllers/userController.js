@@ -15,15 +15,11 @@ export function getUsers(username="%", email="%") {
     return db.prepare(`
         SELECT * 
         FROM users
-        WHERE username LIKE ? AND email LIKE ?`).all(username, email);
+        WHERE name LIKE ? AND email LIKE ?`).all(username, email);
 };
 
 export function addEmployeeToAdmin(requestToken, employeeId) {
-    const admin = db.prepare(`
-        SELECT *
-        FROM users
-        WHERE email = ?
-        `).run(jwt.verify(requestToken, tokenKey).email);
+    const admin = getUserFromToken(requestToken);
 
     let employees = admin.employees;
     if (employees == "") {
@@ -33,7 +29,7 @@ export function addEmployeeToAdmin(requestToken, employeeId) {
         employees += "," + employeeId.toString();
     }
 
-    db.prepare("UPDATE users SET employees = ? WHERE user_id = ?").run(employees, admin.id);
+    db.prepare("UPDATE users SET employees = ? WHERE id = ?").run(employees, admin.id);
 }
 
 export function getEmployees(userId) {

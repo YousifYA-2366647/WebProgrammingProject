@@ -42,6 +42,7 @@ export async function createToken(email, password) {
         return null;
     }
 
+    console.log(user);
     const token = jwt.sign({ userId: user.id, email: user.email }, tokenKey, { expiresIn: "3h" });
     return token;
 }
