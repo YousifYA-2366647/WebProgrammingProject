@@ -4,7 +4,28 @@
     <a href="/input" class= <%= (active == 'input') ? 'active' : ''  %>>Input data</a>
     <a href="/logout" style="float:right">Logout</a>
     <a href="/settings" style="float:right" class= <%= (active == 'settings') ? 'active' : ''  %>>Settings</a>
-    <a href="/notifications" style="float:right" class= <%= (active == 'notifications') ? 'active' : ''  %>>Notifications</a>
+    <a href="/notifications" style="float:right" class= <%= (active == 'notifications') ? 'active' : ''  %>>
+        Notifications
+        <sup id="totalNotifications"></sup>
+        <sup id="unreadNotifications"></sup>
+    </a>
 </nav>
 
 <label>  </label>
+
+<script>
+    fetch("/get-notifications", {
+        method: "GET"
+    }).then((res) => {
+        if (res.status == 200) {
+            return res.json();
+        }
+    }).then(res => {
+        if (Array.isArray(res)) {
+            document.getElementById('totalNotifications').textContent = res.length;
+
+            const unreadNotifications = res.filter(notification => notification.is_read === 0);
+            document.getElementById('unreadNotifications').textContent = unreadNotifications.length;
+        }
+    })
+</script>
