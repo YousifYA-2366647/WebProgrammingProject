@@ -452,6 +452,10 @@ ul.entry-list li p {
     font-size: 20px;
 }
 
+#notificationTitle.isRead {
+    color:rgb(158, 141, 209);
+}
+
 #notificationTitle.dark-mode {
     background-color: transparent;
     color: white;

@@ -74,6 +74,10 @@ app.get("/get-notifications", notificationRouter);
 
 app.post("/read-notification", notificationRouter);
 
+app.post("/accept-follow-request", notificationRouter);
+
+app.post("/delete-notification", notificationRouter);
+
 // employees
 app.get("/get-employees", logRouter);
 

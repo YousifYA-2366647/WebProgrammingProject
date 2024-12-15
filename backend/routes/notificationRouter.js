@@ -1,7 +1,8 @@
 import express from "express";
 import { getCookies } from "../middleware/authorization.js";
-import { getUserNotifications, readNotification } from "../controllers/notificationController.js";
-import { getUserFromToken } from "../controllers/userController.js";
+import { getReceiver, getSender, getUserNotifications, readNotification, removeNotification } from "../controllers/notificationController.js";
+import { addEmployeeToAdmin } from "../controllers/userController.js";
+import { getUserFromToken, getUserById } from "../controllers/userController.js";
 
 const notificationRouter = express.Router();
 
@@ -39,6 +40,30 @@ notificationRouter.post("/read-notification", (request, response) => {
     }
 
     response.status(200);
+})
+
+notificationRouter.post("/accept-follow-request", (request, response) => {
+    const notificationId = request.body.notificationId;
+
+    const receiverId = getReceiver(notificationId);
+    const senderId = getSender(notificationId);
+
+    const sender = getUserById(senderId);
+
+    readNotification(notificationId);
+    if (addEmployeeToAdmin(sender, receiverId)) {
+        response.status(200).json();
+        return;
+    }
+    response.status(400).json({error: "user is already an employee of admin"});
+})
+
+notificationRouter.post("/delete-notification", (request, response) => {
+    const notificationId = request.body.notificationId;
+
+    removeNotification(notificationId);
+
+    response.status(200).json();
 })
 
 

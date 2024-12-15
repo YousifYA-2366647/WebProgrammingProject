@@ -18,18 +18,24 @@ export function getUsers(username="%", email="%") {
         WHERE name LIKE ? AND email LIKE ?`).all(username, email);
 };
 
-export function addEmployeeToAdmin(requestToken, employeeId) {
-    const admin = getUserFromToken(requestToken);
+export function getUserById(userId) {
+    return db.prepare(`
+        SELECT * 
+        FROM users
+        WHERE id = ?`).get(userId);
+}
 
-    let employees = admin.employees;
-    if (employees == "") {
-        employees += employeeId.toString();
+export function addEmployeeToAdmin(admin, employeeId) {
+    let employees = admin.employees.split(",");
+    if (employees.indexOf(employeeId.toString()) == -1) {
+        employees.push(employeeId.toString());
+
+        db.prepare("UPDATE users SET employees = ? WHERE id = ?").run(employees.join(","), admin.id);
+        return true;
     }
     else {
-        employees += "," + employeeId.toString();
+        return false
     }
-
-    db.prepare("UPDATE users SET employees = ? WHERE id = ?").run(employees, admin.id);
 }
 
 export function getEmployees(userId) {
@@ -42,6 +48,19 @@ export function getEmployees(userId) {
     })
 
     return listOfEmployees;
+}
+
+export function removeEmployee(userId, employeeId) {
+    let employees = db.prepare("SELECT employees FROM users WHERE id = ?").get(userId).split(",");
+    const index = employees.indexOf(employeeId.toString());
+    if (index > -1) {
+        employees.splice(index, 1);
+        db.prepare("UPDATE users SET employees = ? WHERE id = ?").run(employees.join(","), userId);
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 export function getUserFromToken(userToken) {

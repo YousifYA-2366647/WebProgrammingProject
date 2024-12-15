@@ -11,23 +11,55 @@ function getCookieValue(cookieName) {
 }
 
 function removeNotification(id) {
-    const notification = document.getElementById(id);
-    if (notification) {
-        notification.parentNode.removeChild(notification);
-    }
+    fetch("/delete-notification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            notificationId: id
+        })
+    })
+    .then((res) => {
+        if (res.status == 200) {
+            const notification = document.getElementById(id);
+            if (notification) {
+                notification.parentNode.removeChild(notification);
+            }
+        }
+    });
 }
 
 function acceptNotification(id) {
-    let postBody = {
+    let body = {
         notificationId: id
     }
-    document.getElementById("notificationTitle").style = "color:rgb(158, 141, 209)";
+
+    fetch("/accept-follow-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+    })
+    .then((res) => {
+        if (res.status == 200) {
+            removeNotification(id);
+        }
+    });
+}
+
+function readNotification(id) {
+    let body = {
+        notificationId: id
+    }
 
     fetch("/read-notification", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(postBody)
-    });
+        body: JSON.stringify(body)
+    })
+        .then(res => {
+            if (res.status == 200) {
+                document.getElementById(id).style = "background-color: green;";
+            }
+        });
 }
 
 function createNotification(notification) {
@@ -41,9 +73,15 @@ function createNotification(notification) {
     let actionButtons = document.createElement("div");
     actionButtons.id = "actionButtons";
 
-    let notificationTitle = document.createElement("p");
+    let notificationTitle = document.createElement("button");
     notificationTitle.id = "notificationTitle";
     notificationTitle.textContent = notification.title;
+    notificationTitle.addEventListener("click", function() {
+        readNotification(notificationFlare.id);
+    })
+    if (notification.is_read == 1) {
+        notificationTitle.classList.toggle("isRead");
+    }
 
     let notificationPreview = document.createElement("p");
     notificationPreview.id = "notificationPreview";

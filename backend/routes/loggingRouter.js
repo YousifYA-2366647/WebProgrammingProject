@@ -1,9 +1,10 @@
 import express from "express";
 import { db } from "../../db.js";
-import { insertUser, getUsers, getEmployees, getUserFromToken, addEmployeeToAdmin } from "../controllers/userController.js";
+import { insertUser, getUsers, getEmployees, getUserFromToken, addEmployeeToAdmin, removeEmployee } from "../controllers/userController.js";
 import { checkRegisterRequest } from "../middleware/formChecking.js";
 import { authorizeRole, createToken, getCookies } from "../middleware/authorization.js";
 import { getUserSettings, insertSettings } from "../controllers/settingsController.js";
+import { addNotification } from "../controllers/notificationController.js";
 
 const logRouter = express.Router();
 
@@ -86,6 +87,7 @@ logRouter.post("/login", express.json(), async (req, res) => {
     res.status(200).json({ message: "Login successful.", settings: userSettings });
 })
 
+// werknemers toevoegen
 logRouter.get("/get-employees", (request, response) => {
     const user = getUserFromToken(getCookies(request).token);
 
@@ -93,13 +95,35 @@ logRouter.get("/get-employees", (request, response) => {
 })
 
 logRouter.post("/add-employee", (request, response) => {
-    let employeeEmail = request.body.email;
+    const employeeEmail = request.body.email;
 
-    const employeeId = getUsers("%", employeeEmail)[0].id;
+    const sender = getUserFromToken(getCookies(request).token);
+    const receiver = getUsers("%", employeeEmail)[0];
+    const title = sender.name + " sent a follow request.";
+    const date = new Date().toDateString()
+    console.log(JSON.stringify({ 
+        sender: sender,
+        receiver: receiver,
+        title: title,
+        date: date
+    }))
 
-    addEmployeeToAdmin(getCookies(request).token, employeeId);
+    // stuur een notificatie ipv meteen werknemer toe voegen
+    addNotification(sender.id, receiver.id, null, title, date);
 
     response.status(200).json();
+})
+
+logRouter.post("/remove-employee", (request, response) => {
+    const employeeEmail = request.body.email;
+    const userId = getUserFromToken(getCookies(request).token).id;
+    const employeeId = getUsers("%", employeeEmail)[0].id;
+
+    if (removeEmployee(userId, employeeId)) {
+        response.status(200).json();
+        return;
+    }
+    response.status(400).json({error: "email is not an employee."});
 })
 
 export {logRouter};
