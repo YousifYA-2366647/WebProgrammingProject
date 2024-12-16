@@ -27,9 +27,4 @@ settingsRouter.post("/settings", (request, response) => {
     response.status(200).json();
 })
 
-settingsRouter.get("/manage-employees", (req, res)=>{
-    //TODO check if admin
-  res.render("pages/manage-employees", {isAdmin: true});
-});
-
 export {settingsRouter}

@@ -85,44 +85,4 @@ logRouter.post("/login", express.json(), async (req, res) => {
     res.status(200).json({ message: "Login successful.", settings: userSettings });
 })
 
-// werknemers toevoegen
-logRouter.get("/get-employees", (request, response) => {
-    const user = getUserFromToken(getCookies(request).token);
-
-    response.status(200).json({employees: getEmployees(user.id)});
-})
-
-logRouter.post("/add-employee", (request, response) => {
-    const employeeEmail = request.body.email;
-
-    if (employeeEmail == getUserFromToken(getCookies(request).token).email) {
-        response.status(400).json({error: "can't send request to yourself."});
-    }
-
-    const sender = getUserFromToken(getCookies(request).token);
-    const receiver = getUsers("%", employeeEmail)[0];
-    const title = sender.name + " sent a follow request.";
-    const date = new Date().toDateString()
-
-    try {
-        addNotification(sender.id, receiver.id, null, title, date);
-
-        response.status(200).json();
-    } catch (error) {
-        response.status(400).json({error: "Email not found."});
-    }
-})
-
-logRouter.post("/remove-employee", (request, response) => {
-    const employeeEmail = request.body.email;
-    const userId = getUserFromToken(getCookies(request).token).id;
-    const employeeId = getUsers("%", employeeEmail)[0].id;
-
-    if (removeEmployee(userId, employeeId)) {
-        response.status(200).json();
-        return;
-    }
-    response.status(400).json({error: "email is not an employee."});
-})
-
 export {logRouter};

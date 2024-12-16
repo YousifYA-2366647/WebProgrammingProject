@@ -4,6 +4,7 @@ import { logRouter } from "./backend/routes/loggingRouter.js";
 import { entryRouter } from "./backend/routes/dataEntryRouter.js"
 import { settingsRouter } from "./backend/routes/settingsRouter.js";
 import { notificationRouter } from "./backend/routes/notificationRouter.js";
+import { employeeRouter } from "./backend/routes/employeeRouter.js";
 
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
@@ -79,11 +80,13 @@ app.post("/accept-follow-request", notificationRouter);
 app.post("/delete-notification", notificationRouter);
 
 // employees
-app.get("/get-employees", logRouter);
+app.get("/get-employees", employeeRouter);
 
-app.post("/add-employee", logRouter);
+app.post("/add-employee", employeeRouter);
 
-app.get("/manage-employees", settingsRouter);
+app.post("/remove-employee", employeeRouter)
+
+app.get("/manage-employees", employeeRouter);
 
 // Middleware for unknown routes
 // Must be last in pipeline
