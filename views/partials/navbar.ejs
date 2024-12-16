@@ -2,7 +2,9 @@
     <a href="/" class= <%= (active == 'home') ? 'active' : ''  %>>Home</a>
     <a href="/analyse" class= <%= (active == 'analyse') ? 'active' : ''  %>>Analyse</a>
     <a href="/input" class= <%= (active == 'input') ? 'active' : ''  %>>Input data</a>
+    <% if(isAdmin){ %>
     <a href="/manage-employees" class= <%= (active == 'manage-employees') ? 'active' : ''  %>>Manage employees</a>
+    <% } %>
     <a href="/logout" style="float:right">Logout</a>
     <a href="/settings" style="float:right" class= <%= (active == 'settings') ? 'active' : ''  %>>Settings</a>
     <a href="/notifications" style="float:right" class= <%= (active == 'notifications') ? 'active' : ''  %>>

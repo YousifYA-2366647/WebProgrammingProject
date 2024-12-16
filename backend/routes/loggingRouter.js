@@ -9,12 +9,14 @@ import { addNotification } from "../controllers/notificationController.js";
 const logRouter = express.Router();
 
 logRouter.get("/", (request, response) => {
-    if (!getCookies(request).token) {
+    let token = getCookies(request).token;
+    if (!token) {
         response.redirect("/login");
         return;
     }
 
-    response.render('pages/home');
+    let isAdmin = getUserSettings(getUserFromToken(token).id).isAdmin;
+    response.render('pages/home', {isAdmin: isAdmin});
 });
 
 logRouter.get("/login", (request, response) => {
@@ -34,8 +36,6 @@ logRouter.get("/logout", (request, response) => {
         sameSite: "strict",
         expires: new Date(Date.now()),
     });
-
-
 
     response.redirect("/login");
 });

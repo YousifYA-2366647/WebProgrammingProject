@@ -3,16 +3,19 @@ import { getCookies } from "../middleware/authorization.js";
 import { getReceiver, getSender, getUserNotifications, readNotification, removeNotification } from "../controllers/notificationController.js";
 import { addEmployeeToAdmin } from "../controllers/userController.js";
 import { getUserFromToken, getUserById } from "../controllers/userController.js";
+import { getUserSettings } from "../controllers/settingsController.js";
 
 const notificationRouter = express.Router();
 
 notificationRouter.get("/notifications", (request, response) => {
-    if (!getCookies(request).token) {
+    let token = getCookies(request).token;
+    if (!token) {
         response.redirect("/login");
         return;
     }
 
-    response.render("pages/notifications")
+    let isAdmin = getUserSettings(getUserFromToken(token).id).isAdmin;
+    response.render("pages/notifications", {isAdmin: isAdmin})
 });
 
 notificationRouter.get("/get-notifications", async (request, response) => {

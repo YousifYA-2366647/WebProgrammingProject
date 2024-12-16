@@ -7,6 +7,7 @@ import { getCookies, tokenKey } from "../middleware/authorization.js";
 import { insertEntry, getTimeEntries, getAmountOfEntries } from "../controllers/timeEntryController.js";
 import { db } from "../../db.js";
 import { getUserFromToken } from "../controllers/userController.js";
+import { getUserSettings } from "../controllers/settingsController.js";
 
 const entryRouter = express.Router();
 const storage = multer.diskStorage({
@@ -41,21 +42,25 @@ entryRouter.post("/time-entry", upload.any(), checkEntryRequest(), express.json(
 })
 
 entryRouter.get("/analyse", (request, response) => {
-    if (!getCookies(request).token) {
+    let token = getCookies(request).token;
+    if (!token) {
         response.redirect("/login");
         return;
     }
 
-    response.render('pages/analyse');
+    let isAdmin = getUserSettings(getUserFromToken(token).id).isAdmin;
+    response.render('pages/analyse', {isAdmin: isAdmin});
 });
 
 entryRouter.get("/input", (request, response) => {
-    if (!getCookies(request).token) {
+    let token = getCookies(request).token;
+    if (!token) {
         response.redirect("/login");
         return;
     }
 
-    response.render('pages/input');
+    let isAdmin = getUserSettings(getUserFromToken(token).id).isAdmin;
+    response.render('pages/input', {isAdmin: isAdmin});
 });
 
 entryRouter.get("/get-time-entries", (request, response) => {

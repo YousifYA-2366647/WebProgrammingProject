@@ -2,18 +2,20 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { getCookies, tokenKey } from "../middleware/authorization.js";
 import { db } from "../../db.js";
-import { updateUserSettings } from "../controllers/settingsController.js";
+import { getUserSettings, updateUserSettings } from "../controllers/settingsController.js";
 import { getUserFromToken } from "../controllers/userController.js";
 
 const settingsRouter = express.Router();
 
 settingsRouter.get("/settings", (request, response) => {
-    if (!getCookies(request).token) {
+    let token = getCookies(request).token;
+    if (!token) {
         response.redirect("/login");
         return;
     }
 
-    response.render('pages/settings');
+    let isAdmin = getUserSettings(getUserFromToken(token).id).isAdmin;
+    response.render('pages/settings', {isAdmin: isAdmin});
 });
 
 settingsRouter.post("/settings", (request, response) => {
@@ -27,9 +29,21 @@ settingsRouter.post("/settings", (request, response) => {
     response.status(200).json();
 })
 
-settingsRouter.get("/manage-employees", (req, res)=>{
-    //TODO check if admin
-  res.render("pages/manage-employees", {isAdmin: true});
+settingsRouter.get("/manage-employees", (req, res) => {
+    let token = getCookies(req).token;
+    if (!token) {
+        res.redirect("/login");
+        return;
+    }
+
+    let isAdmin = getUserSettings(getUserFromToken(token).id).isAdmin;
+
+    if (!isAdmin) {
+        res.status(401).json({ error: "Access Denied" });
+        return;
+    }
+
+    res.render("pages/manage-employees", { isAdmin: true });
 });
 
-export {settingsRouter}
+export { settingsRouter }
