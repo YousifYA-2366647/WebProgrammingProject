@@ -5,7 +5,7 @@ function createAccount(event) {
         username: document.getElementById("username").value,
         email: document.getElementById("email").value,
         password: document.getElementById("password").value,
-        role: (document.getElementById("userButton").disabled?"user": "admin")
+        isAdmin: (document.getElementById("userButton").disabled?0: 1)
     };
 
     if (!body.username || !body.email || !body.password) {

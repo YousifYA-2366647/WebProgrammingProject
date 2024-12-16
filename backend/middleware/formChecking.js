@@ -6,7 +6,7 @@ export function checkRegisterRequest() {
         username: Joi.string().min(3).max(30).required(),
         email: Joi.string().email().required(),
         password: Joi.string().min(8).required(),
-        role: Joi.string().min(4).max(5).required()
+        isAdmin: Joi.number().min(0).max(1).required()
       })
   
       const { error } = registerForm.validate(req.body);
