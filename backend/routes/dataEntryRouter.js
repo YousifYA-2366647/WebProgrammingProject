@@ -12,7 +12,7 @@ import { getUserSettings } from "../controllers/settingsController.js";
 const entryRouter = express.Router();
 const storage = multer.diskStorage({
     destination: (req, file, callback) => {
-        callback(null, "public/tmp/uploads/")
+        callback(null, "/public/tmp/uploads/")
     },
     filename: (req, file, callback) => {
         const fileType = path.extname(file.originalname);
@@ -142,7 +142,7 @@ entryRouter.get("/export-list", async (request, response) => {
                     if (document.y + 300 > document.page.height - document.page.margins.bottom) {
                         document.addPage();
                     }
-                    
+
                     try {
                         document.image(file, {
                             

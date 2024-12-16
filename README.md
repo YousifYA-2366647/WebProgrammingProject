@@ -31,5 +31,5 @@ run: `node app.js`
 
 ## Deployment
 
-build: `docker build . -t webprogramming/project`
-run: `docker run -it -p 8080:80 webprogramming/project`
+build: `docker build -t time-tracking-system-jy .`
+run: `docker run -it -p 8080:80 time-tracking-system-jy`
