@@ -1,16 +1,3 @@
-const LOCALE = 'nl-be'
-
-function getCookie(name) {
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-        cookie = cookie.trim();
-        if (cookie.startsWith(name + '=')) {
-            return cookie.substring(name.length + 1);
-        }
-    }
-    return null;
-}
-
 function calcDate(index) {
     var date = new Date(currentDate.getFullYear(), currentDate.getMonth());
 
@@ -58,6 +45,7 @@ function createCalender() {
         li.addEventListener('click', dateClick);
     }
 }
+
 
 function toURLdateString(date) {
     s = selectedDate.getFullYear() + '-' + (selectedDate.getMonth() + 1) + '-';
@@ -123,7 +111,6 @@ function dateClick(e) {
         }
     });
 }
-
 
 
 const today = new Date();
