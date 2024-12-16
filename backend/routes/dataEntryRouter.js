@@ -98,13 +98,13 @@ entryRouter.get("/get-amount-of-entries", (request, response) => {
 
 entryRouter.get("/get-employee-entries", (request, response) => {
     const employeeId = parseInt(request.query.id);
-    const start = request.query.start ? request.query.start : "0000-01-01 00:00:00";
-    const end = request.query.end ? request.query.end : "9999-12-31 23:59:59";
+    const start = request.query.start == null ? request.query.from : "0000-01-01 00:00:00";
+    const end = request.query.end == null ? request.query.to : "9999-12-31 23:59:59";
     try {
         // TODO moet eigen employee zijn
         const employeeEntries = getTimeEntries(employeeId, "%", start, end, "%");
 
-        response.status(200).json({employeeEntries: employeeEntries});
+        response.status(200).json({ employeeEntries: employeeEntries });
     }
     catch (err) {
         response.status(400).json({ error: err });
