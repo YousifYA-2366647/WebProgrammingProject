@@ -40,7 +40,7 @@ export function addEmployeeToAdmin(admin, employeeId) {
 
 export function getEmployees(userId) {
     const employees = db.prepare("SELECT employees FROM users WHERE id = ?").get(userId).employees;
-    let employeeList = employees.split(",");
+    let employeeList = employees.substring(1).split(",");
 
     let listOfEmployees = []
     employeeList.forEach((employeeId) => {
