@@ -26,7 +26,22 @@
   <script>
     function createLi(id, name, email) {
       let li = document.createElement("li");
-      li.textContent = id + ' ' + name + ' ' + email;
+
+      let checkBox = document.createElement("input");
+      checkBox.setAttribute("type", "checkbox");
+      li.appendChild(checkBox);
+
+      let label = document.createElement("label");
+      label.textContent = id + ' ' + name + ' ' + email;
+      li.appendChild(label);
+
+      let deleteBttn = document.createElement("button");
+      deleteBttn.textContent = "Delete";
+      deleteBttn.addEventListener('click', e => {
+        deleteEmployee(email);
+      })
+      li.appendChild(deleteBttn);
+
       return li;
     }
 
@@ -56,6 +71,23 @@
       });
     }
 
+    function deleteEmployee(email) {
+      fetch("/remove-employee", {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+        email: email
+      })
+      }).then(res => {
+        if (response == 200) {
+          return;
+        }
+        window.alert(res.statusText);
+      });
+    }
+
     function listEmployees(event) {
       fetch("/get-employees", {
         method: 'get',
@@ -70,9 +102,7 @@
       }).then(json => {
         employeeList = document.getElementById("employeeList");
         for (employee of json.employees) {
-
           employeeList.appendChild(createLi(employee.id, employee.name, employee.email));
-          console.log(employee);
         }
       });
     }
