@@ -142,12 +142,17 @@ nav.dark-mode {
 
 nav a {
     float: left;
-    display: inline;
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     color: cornflowerblue;
-    text-align: center;
     padding: 10px 16px;
     text-decoration: none;
+}
+
+nav a sup {
+    padding: 0px 2px;
+    margin: 0px 3px;
 }
 
 nav a:hover {

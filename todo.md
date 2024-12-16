@@ -1,5 +1,9 @@
 # To do:
 
+## front-end
+
+- [ ] login fixen
+
 ## Minimale vereisten
 
 - [x] Front-end ontwikkeling met behulp van HTML/CSS/Javascript - je mag daarbij gebruik maken van het Bootstrap framework. 
@@ -12,7 +16,7 @@
 - [ ] Het systeem laat toe om analyses (netjes) af te drukken op papier en te exporteren naar PDF formaat
 - [ ] Je maakt een koppeling met externe bronnen zodat die geïntegreerd kunnen worden aan een tijdsregistratie (denk bv aan foto’s via Google Photos,...). 
 - [ ] Je maakt gebruik van minstens 3 browser APIs (zie onderaan dit document voor een niet-exhaustieve voorbeeldlijst)
-- [ ] Je maakt gebruik van minstens 1 externe API (zie eveneens onderaan)
+- [X] Je maakt gebruik van minstens 1 externe API (zie eveneens onderaan)
 - [ ] Je voorziet 2 uitbreidingen aan het systeem die je zelf bedacht hebt en die niet in deze minimale lijst van vereisten staan. Als inspiratie geven we een paar voorbeeldjes - maar wees zeker zelf creatief : het voorzien van commentaren bij tijdsregistraties, het importeren van tijdsregistraties van andere systemen, calendar-integratie, offline modus,...
 
 ## Inleveren
