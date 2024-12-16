@@ -509,36 +509,63 @@ ul.entry-list li p {
 
 /* manage emplyees */
 
-#employeeList {
-    width: fit-content;
-    display: inline-flex;
-    flex-direction: column;
+#employeeTable {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 1000px;
 }
 
-#employeeList li {
-    height: 100%;
+.tableEntry {
+    display: grid;
+    grid-template-columns: 0.5fr 1fr 2fr 4fr 1fr;
+    align-items: stretch;
+}
+
+.checkboxColumn {
     display: flex;
-    flex-direction: row;    
+    align-items: center;
+    justify-content: center;
+    border: solid black 2px;
+    height: 100%;
 }
 
-#employeeList li label {
-    text-align: left;
-    width: 100%;
-    padding: 0 10px;
+.deleteButtonColumn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: solid black 2px;
+    height: 100%;
 }
 
-#employeeList li input {
+
+.nameColumn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 0;
-    width: max-content;
+    border: solid black 2px;
+    height: 100%;
 }
 
-#employeeList li button {
-    margin: 2px;
+.employeeDeleteButton {
+    text-align: center;
+    height: 100%;
+    width: 100%;
+    border-radius: 0;
     background-color: red;
-    width: fit-content;
-    font-size: small;
 }
 
-#employeeList li button:hover {
+.employeeDeleteButton:hover {
     background-color: brown;
 }
+
+.idColumn, .emailColumn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: solid black 2px;
+    border-bottom: solid black 2px;
+    margin: 0;
+    height: 100%;
+}
+

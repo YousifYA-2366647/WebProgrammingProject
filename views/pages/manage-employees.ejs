@@ -18,147 +18,17 @@
   </form>
 
   <h1>Current employees:</h1>
+  <div id="employeeTable">
+    <div id="tableHeader" class="tableEntry">
+      <div id="checkboxHeader" class="checkboxColumn"></div>
+      <p id="idHeader" class="idColumn">ID</p>
+      <p id="nameHeader" class="nameColumn">Name</p>
+      <p id="emailHeader" class="emailColumn">Email</p>
+      <div id="deleteButtonHeader" class="deleteButtonColumn"></div>
+    </div>
+  </div>
 
-  <ul id="employeeList">
-    <!-- items added in js -->
-  </ul>
-
-  <script>
-    function getCookie(name) {
-      const cookies = document.cookie.split(';');
-      for (let cookie of cookies) {
-        cookie = cookie.trim();
-        if (cookie.startsWith(name + '=')) {
-          return cookie.substring(name.length + 1);
-        }
-      }
-      return null;
-    }
-
-    function createLi(id, name, email) {
-      cookie = getCookie("selectedEmployees");
-      let idlist = cookie ? JSON.parse(cookie) : [];
-
-      let li = document.createElement("li");
-
-      let checkBox = document.createElement("input");
-      checkBox.setAttribute("type", "checkbox");
-      checkBox.addEventListener('change', e => {
-        selectEmplyee(e.target.checked, id);
-      })
-      if (idlist.includes(id)) {
-        checkBox.checked = true;
-      }
-      li.appendChild(checkBox);
-
-      let label = document.createElement("label");
-      label.textContent = id + ' ' + name + ' ' + email;
-      li.appendChild(label);
-
-      let deleteBttn = document.createElement("button");
-      deleteBttn.textContent = "Delete";
-      deleteBttn.addEventListener('click', e => {
-        deleteEmployee(id, name, email);
-      })
-      li.appendChild(deleteBttn);
-
-      return li;
-    }
-
-    function addEmployee(event) {
-      event.preventDefault();
-
-      let responseTxt = document.getElementById("response");
-
-      let body = {
-        email: document.getElementById("emailInput").value,
-      };
-      fetch("/add-employee", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-      }).then(res => {
-        if (res.status == 200) {
-          responseTxt.textContent = "request sent";
-          document.getElementById("emailInput").value = "";
-        } else {
-          responseTxt.textContent = res.statusText;
-        }
-        setTimeout(function() {
-          responseTxt.textContent = "";
-        }, 3000);
-      });
-    }
-
-    function deleteEmployee(id, name, email) {
-      if (!window.confirm("Are you sure you want to delete: " + name + "?")) {
-        return;
-      }
-
-      cookie = getCookie("selectedEmployees");
-      let idlist = cookie ? JSON.parse(cookie) : [];
-
-      if (idlist.includes(id)) {
-        idlist.splice(idlist.indexOf(id), 1);
-      }
-
-      document.cookie = "selectedEmployees=" + JSON.stringify(idlist) + "; SameSite=Strict";
-
-      fetch("/remove-employee", {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          email: email
-        })
-      }).then(res => {
-        if (res.status == 200) {
-          location.reload();
-          return;
-        }
-        window.alert(res.statusText);
-      });
-    }
-
-    function selectEmplyee(checked, id) {
-      cookie = getCookie("selectedEmployees");
-      let idlist = cookie ? JSON.parse(cookie) : [];
-
-      if (idlist.includes(id) && !checked) {
-        idlist.splice(idlist.indexOf(id), 1);
-      } else if (!idlist.includes(id) && checked) {
-        idlist.push(id);
-      }
-
-      document.cookie = "selectedEmployees=" + JSON.stringify(idlist) + "; SameSite=Strict";
-    }
-
-    function listEmployees(event) {
-      fetch("/get-employees", {
-        method: 'get',
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }).then(res => {
-        if (res.status == 200) {
-          return res.json();
-        }
-        window.alert(res.statusText);
-      }).then(json => {
-        employeeList = document.getElementById("employeeList");
-        for (employee of json.employees) {
-          if (employee) {
-            employeeList.appendChild(createLi(employee.id, employee.name, employee.email));
-          }
-        }
-      });
-    }
-
-    document.getElementById("addEmployee").addEventListener("submit", addEmployee);
-    document.addEventListener("DOMContentLoaded", listEmployees);
+  <script src="js/manageEmployees.js">
   </script>
 
 </body>
