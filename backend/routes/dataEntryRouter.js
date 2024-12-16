@@ -49,7 +49,7 @@ entryRouter.get("/analyse", (request, response) => {
     }
 
     let isAdmin = getUserSettings(getUserFromToken(token).id).isAdmin;
-    response.render('pages/analyse', {isAdmin: isAdmin});
+    response.render('pages/analyse', { isAdmin: isAdmin });
 });
 
 entryRouter.get("/input", (request, response) => {
@@ -60,7 +60,7 @@ entryRouter.get("/input", (request, response) => {
     }
 
     let isAdmin = getUserSettings(getUserFromToken(token).id).isAdmin;
-    response.render('pages/input', {isAdmin: isAdmin});
+    response.render('pages/input', { isAdmin: isAdmin });
 });
 
 entryRouter.get("/get-time-entries", (request, response) => {
@@ -97,17 +97,17 @@ entryRouter.get("/get-amount-of-entries", (request, response) => {
 })
 
 entryRouter.get("/get-employee-entries", (request, response) => {
-    const employeeId = getUsers("%", request.body.email).id;
-    const start = request.body.start;
-    const end = request.body.end;
-
+    const employeeId = parseInt(request.query.id);
+    const start = request.query.start ? request.query.start : "0000-01-01 00:00:00";
+    const end = request.query.end ? request.query.end : "9999-12-31 23:59:59";
     try {
+        // TODO moet eigen employee zijn
         const employeeEntries = getTimeEntries(employeeId, "%", start, end, "%");
 
-        response.status(200).json(employeeEntries);
+        response.status(200).json({employeeEntries: employeeEntries});
     }
     catch (err) {
-        response.status(400).json({error: err});
+        response.status(400).json({ error: err });
     }
 })
 
@@ -125,7 +125,7 @@ entryRouter.get("/export-list", async (request, response) => {
 
         document.pipe(response);
 
-        document.fontSize(20).text('Time Entries: ' + user.email, {align: 'center'});
+        document.fontSize(20).text('Time Entries: ' + user.email, { align: 'center' });
         document.moveDown();
 
         timeEntries.forEach(entry => {
@@ -145,7 +145,7 @@ entryRouter.get("/export-list", async (request, response) => {
 
                     try {
                         document.image(file, {
-                            
+
                             fit: [400, 300],
                             align: 'center',
                             valign: 'center'
@@ -165,7 +165,7 @@ entryRouter.get("/export-list", async (request, response) => {
         document.end();
     }
     catch (err) {
-        response.status(500).json({error: "Failed to generate PDF"});
+        response.status(500).json({ error: "Failed to generate PDF" });
     }
 })
 

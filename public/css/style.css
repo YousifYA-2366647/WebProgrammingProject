@@ -52,6 +52,7 @@ select {
 }
 
 select.viewselector {
+    height: fit-content;
     margin: 10px;
 }
 

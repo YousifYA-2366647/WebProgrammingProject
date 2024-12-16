@@ -37,6 +37,11 @@ logRouter.get("/logout", (request, response) => {
         expires: new Date(Date.now()),
     });
 
+    response.cookie("selectedEmployees", "", {
+        sameSite: "strict",
+        expires: new Date(Date.now()),
+    });
+
     response.redirect("/login");
 });
   

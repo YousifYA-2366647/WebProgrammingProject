@@ -1,5 +1,16 @@
 const LOCALE = 'nl-be'
 
+function getCookie(name) {
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name + '=')) {
+            return cookie.substring(name.length + 1);
+        }
+    }
+    return null;
+}
+
 function calcDate(index) {
     var date = new Date(currentDate.getFullYear(), currentDate.getMonth());
 
@@ -94,7 +105,7 @@ function dateClick(e) {
             li.appendChild(title);
 
             date = document.createElement("p");
-            dateOptions = { day: 'numeric', month: 'numeric', hour: '2-digit', minute:'2-digit'};
+            dateOptions = { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' };
             beginText = (new Date(entries[i].start_time)).toLocaleString(LOCALE, dateOptions);
             endText = (new Date(entries[i].end_time)).toLocaleString(LOCALE, dateOptions);
             date.textContent = beginText;
