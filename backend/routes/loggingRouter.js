@@ -82,8 +82,6 @@ logRouter.post("/login", express.json(), async (req, res) => {
     const user = db.prepare("SELECT * FROM users WHERE email = ?").all(email)[0];
     const userSettings = getUserSettings(user.id);
 
-    console.log(userSettings);
-
     res.status(200).json({ message: "Login successful.", settings: userSettings });
 })
 
@@ -97,21 +95,22 @@ logRouter.get("/get-employees", (request, response) => {
 logRouter.post("/add-employee", (request, response) => {
     const employeeEmail = request.body.email;
 
+    if (employeeEmail == getUserFromToken(getCookies(request).token).email) {
+        response.status(400).json({error: "can't send request to yourself."});
+    }
+
     const sender = getUserFromToken(getCookies(request).token);
     const receiver = getUsers("%", employeeEmail)[0];
     const title = sender.name + " sent a follow request.";
     const date = new Date().toDateString()
-    console.log(JSON.stringify({ 
-        sender: sender,
-        receiver: receiver,
-        title: title,
-        date: date
-    }))
 
-    // stuur een notificatie ipv meteen werknemer toe voegen
-    addNotification(sender.id, receiver.id, null, title, date);
+    try {
+        addNotification(sender.id, receiver.id, null, title, date);
 
-    response.status(200).json();
+        response.status(200).json();
+    } catch (error) {
+        response.status(400).json({error: "Email not found."});
+    }
 })
 
 logRouter.post("/remove-employee", (request, response) => {
