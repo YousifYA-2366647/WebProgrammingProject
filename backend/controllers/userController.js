@@ -54,7 +54,7 @@ export function getEmployees(userId) {
 }
 
 export function removeEmployee(userId, employeeId) {
-    let employees = db.prepare("SELECT employees FROM users WHERE id = ?").get(userId).split(",");
+    let employees = db.prepare("SELECT employees FROM users WHERE id = ?").get(userId)['employees'].split(",");
     const index = employees.indexOf(employeeId.toString());
     if (index > -1) {
         employees.splice(index, 1);
