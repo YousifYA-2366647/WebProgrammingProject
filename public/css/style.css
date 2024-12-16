@@ -73,7 +73,8 @@ div.roleSelector {
     column-gap: 10px;
 }
 
-#adminButton, #userButton {
+#adminButton,
+#userButton {
     padding: 10px;
     border-radius: 10px;
     margin-top: 10px;
@@ -85,13 +86,15 @@ div.roleSelector {
     font-size: 16px;
 }
 
-#adminButton:hover, #userButton:hover {
+#adminButton:hover,
+#userButton:hover {
     background-color: grey;
     transition: 0.7s;
     cursor: pointer;
 }
 
-#adminButton:disabled, #userButton:disabled {
+#adminButton:disabled,
+#userButton:disabled {
     background-color: #41464b;
 }
 
@@ -459,7 +462,7 @@ ul.entry-list li p {
 }
 
 #notificationTitle.isRead {
-    color:rgb(158, 141, 209);
+    color: rgb(158, 141, 209);
 }
 
 #notificationTitle.dark-mode {
@@ -473,28 +476,33 @@ ul.entry-list li p {
     cursor: pointer;
 }
 
-#notificationPreview, #notificationDate {
+#notificationPreview,
+#notificationDate {
     font-size: 13px;
     margin: 0;
 }
 
-#acceptNotification, #deleteNotification {
+#acceptNotification,
+#deleteNotification {
     background-color: darkgrey;
     width: 50px;
     height: 40px;
 }
 
-#acceptNotification:hover, #deleteNotification:hover {
+#acceptNotification:hover,
+#deleteNotification:hover {
     background-color: #41464b;
 }
 
-#acceptNotification.dark-mode, #deleteNotification.dark-mode {
+#acceptNotification.dark-mode,
+#deleteNotification.dark-mode {
     background-color: darkgrey;
     width: 50px;
     height: 40px;
 }
 
-#acceptNotification.dark-mode:hover, #deleteNotification.dark-mode:hover {
+#acceptNotification.dark-mode:hover,
+#deleteNotification.dark-mode:hover {
     background-color: #2e3033;
 }
 
@@ -502,7 +510,35 @@ ul.entry-list li p {
 /* manage emplyees */
 
 #employeeList {
-    width: max-content;
+    width: fit-content;
+    display: inline-flex;
+    flex-direction: column;
+}
+
+#employeeList li {
+    
     display: flex;
-  flex-direction: column;
+    flex-direction: row;
+}
+
+#employeeList li label {
+    text-align: left;
+    width: 100%;
+    padding: 0 10px;
+}
+
+#employeeList li input {
+    margin: 0;
+    width: max-content;
+}
+
+#employeeList li button {
+    margin: 0;
+    background-color: red;
+    width: fit-content;
+    font-size: small;
+}
+
+#employeeList li button:hover {
+    background-color: crimson;
 }
