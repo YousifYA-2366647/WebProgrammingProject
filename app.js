@@ -83,6 +83,8 @@ app.get("/get-employees", logRouter);
 
 app.post("/add-employee", logRouter);
 
+app.get("/manage-employees", settingsRouter);
+
 // Middleware for unknown routes
 // Must be last in pipeline
 app.use((request, response, next) => {

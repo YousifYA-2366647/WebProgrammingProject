@@ -496,3 +496,12 @@ ul.entry-list li p {
 #acceptNotification.dark-mode:hover, #deleteNotification.dark-mode:hover {
     background-color: #2e3033;
 }
+
+
+/* manage emplyees */
+
+#employeeList {
+    width: max-content;
+    display: flex;
+  flex-direction: column;
+}

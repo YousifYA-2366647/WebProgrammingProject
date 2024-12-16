@@ -13,7 +13,7 @@ settingsRouter.get("/settings", (request, response) => {
         return;
     }
 
-    response.render('pages/settings', {isAdmin: true});
+    response.render('pages/settings');
 });
 
 settingsRouter.post("/settings", (request, response) => {
@@ -26,5 +26,10 @@ settingsRouter.post("/settings", (request, response) => {
 
     response.status(200).json();
 })
+
+settingsRouter.get("/manage-employees", (req, res)=>{
+    //TODO check if admin
+  res.render("pages/manage-employees", {isAdmin: true});
+});
 
 export {settingsRouter}
