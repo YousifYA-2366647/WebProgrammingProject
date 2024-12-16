@@ -45,19 +45,20 @@ employeeRouter.post("/remove-employee", (request, response) => {
     response.status(400).json({error: "email is not an employee."});
 })
 
-employeeRouter.get("/manage-employees", (req, res)=>{
-    try {
-        const user = getUserFromToken(getCookies(req).token);
-        if (getUserSettings(user.id).isAdmin == 1) {
-            res.render("pages/manage-employees", {isAdmin: true});
-        }
-        else {
-            res.render("pages/home");
-        }
+employeeRouter.get("/manage-employees", (req, res) => {
+    let token = getCookies(req).token;
+    if (!token) {
+        res.redirect("/login");
+        return;
     }
-    catch (err) {
-        res.render("pages/login");
-    }
-});
 
+    let isAdmin = getUserSettings(getUserFromToken(token).id).isAdmin;
+
+    if (!isAdmin) {
+        res.status(401).json({ error: "Access Denied" });
+        return;
+    }
+
+    res.render("pages/manage-employees", { isAdmin: true });
+});
 export { employeeRouter };

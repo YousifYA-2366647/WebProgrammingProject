@@ -29,21 +29,4 @@ settingsRouter.post("/settings", (request, response) => {
     response.status(200).json();
 })
 
-settingsRouter.get("/manage-employees", (req, res) => {
-    let token = getCookies(req).token;
-    if (!token) {
-        res.redirect("/login");
-        return;
-    }
-
-    let isAdmin = getUserSettings(getUserFromToken(token).id).isAdmin;
-
-    if (!isAdmin) {
-        res.status(401).json({ error: "Access Denied" });
-        return;
-    }
-
-    res.render("pages/manage-employees", { isAdmin: true });
-});
-
 export { settingsRouter }
