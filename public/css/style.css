@@ -309,6 +309,7 @@ ul.entry-list li p {
     width: 100%;
     height: fit-content;
     display: inline-flex;
+    background-color: #ddd;
     flex-direction: row;
 }
 

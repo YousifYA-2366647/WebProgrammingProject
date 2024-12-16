@@ -68,6 +68,8 @@ app.get("/get-time-entries", entryRouter);
 
 app.get("/get-amount-of-entries", entryRouter);
 
+app.get("/export-list", entryRouter);
+
 // notifications
 app.get("/notifications", notificationRouter);
 

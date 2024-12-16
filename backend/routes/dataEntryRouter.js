@@ -2,10 +2,10 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import multer from "multer";
 import path from "path";
+import PDFDocument from "pdfkit";
 import { checkEntryRequest } from "../middleware/formChecking.js";
 import { getCookies, tokenKey } from "../middleware/authorization.js";
 import { insertEntry, getTimeEntries, getAmountOfEntries } from "../controllers/timeEntryController.js";
-import { db } from "../../db.js";
 import { getUserFromToken, getUsers } from "../controllers/userController.js";
 import { getUserSettings } from "../controllers/settingsController.js";
 
@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
         const fileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${fileType}`;
         callback(null, fileName);
     }
-});
+})
 
 const upload = multer({ storage: storage });
 
@@ -108,6 +108,64 @@ entryRouter.get("/get-employee-entries", (request, response) => {
     }
     catch (err) {
         response.status(400).json({error: err});
+    }
+})
+
+entryRouter.get("/export-list", async (request, response) => {
+    try {
+        const user = getUserFromToken(getCookies(request).token);
+        const timeEntries = getTimeEntries(user.id);
+
+        timeEntries.sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
+
+        const document = new PDFDocument();
+
+        response.setHeader('Content-type', 'application/pdf');
+        response.setHeader('Content-Disposition', 'attachment; filenam="time_entries.pdf');
+
+        document.pipe(response);
+
+        document.fontSize(20).text('Time Entries: ' + user.email, {align: 'center'});
+        document.moveDown();
+
+        timeEntries.forEach(entry => {
+            const startDate = new Date(entry.start_time).toLocaleString();
+            const endDate = new Date(entry.end_time).toLocaleString();
+
+            document.fontSize(14).text(`Title: ${entry.title}`);
+            document.fontSize(12).text(`Date: ${startDate} - ${endDate}`);
+            document.fontSize(12).text(`Description: ${entry.description}`);
+            document.moveDown();
+
+            if (entry.files && entry.files.length > 0) {
+                for (const file of JSON.parse(entry.files)) {
+                    if (document.y + 300 > document.page.height - document.page.margins.bottom) {
+                        document.addPage();
+                    }
+                    
+                    try {
+                        document.image(file, {
+                            
+                            fit: [400, 300],
+                            align: 'center',
+                            valign: 'center'
+                        });
+                        document.moveDown(22);
+                    }
+                    catch (err) {
+                        console.error(`Failed to load image: ${file}`, err);
+                        document.fontSize(10).text(`(Failed to load image: ${file})`, { align: 'center' });
+                        document.moveDown();
+                    }
+                }
+            }
+            document.moveDown();
+        });
+
+        document.end();
+    }
+    catch (err) {
+        response.status(500).json({error: "Failed to generate PDF"});
     }
 })
 

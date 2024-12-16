@@ -11,12 +11,17 @@
 
         <h1>Analyse data</h1>
 
-        <select id="options" class="viewselector">
-            <option>List</option>
-            <option>Calender</option>
-            <option>Histogram</option>
-        </select>
-
+        <div style="display: grid;grid-template-columns: 1fr 1fr;column-gap: 20px;">
+            <select id="options" class="viewselector" style="height: 50px;">
+                <option>List</option>
+                <option>Calender</option>
+                <option>Histogram</option>
+            </select>
+            <div style="display: grid;grid-template-rows: 1fr 1fr;row-gap: 20px;">
+                <button id="exportButton" style="display: inline-block;width: 150px;">Export To PDF</button>
+                <p id="exportError" style="color: red;"></p>
+            </div>
+        </div>
 
         <!-- LIST -->
         <div id="list">
@@ -29,7 +34,7 @@
         <!-- CALENDER -->
         <div class="grid-container" id="calender" style="display: none;">
             <div class="grid-item">
-                <div class="week-selector" style="background-color: #ddd;">
+                <div class="week-selector">
                     <%- include("../partials/monthselector", { id:'calender-month', locale: 'en-us' }) %>
                         <input type="number" min="1900" max="2100" value="1900" id="calender-year">
                 </div>
