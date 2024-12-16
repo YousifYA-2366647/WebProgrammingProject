@@ -97,6 +97,10 @@ logRouter.get("/get-employees", (request, response) => {
 logRouter.post("/add-employee", (request, response) => {
     const employeeEmail = request.body.email;
 
+    if (employeeEmail == getUserFromToken(getCookies(request).token).email) {
+        response.status(400).json({error: "can't send request to yourself."});
+    }
+
     const sender = getUserFromToken(getCookies(request).token);
     const receiver = getUsers("%", employeeEmail)[0];
     const title = sender.name + " sent a follow request.";

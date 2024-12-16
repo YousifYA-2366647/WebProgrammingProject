@@ -75,13 +75,18 @@ function addEmployee(event) {
     }).then(res => {
         if (res.status == 200) {
             responseTxt.textContent = "request sent";
+            return null;
         } else {
-            responseTxt.textContent = res.statusText;
+            return res.json();
+        }
+    }).then(res => {
+        if (res != null) {
+            responseTxt.textContent = res.error;
         }
         setTimeout(function () {
             responseTxt.textContent = "";
         }, 3000);
-    });
+    })
 }
 
 function main() {
