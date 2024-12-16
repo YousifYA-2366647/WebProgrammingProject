@@ -6,7 +6,7 @@ import { checkEntryRequest } from "../middleware/formChecking.js";
 import { getCookies, tokenKey } from "../middleware/authorization.js";
 import { insertEntry, getTimeEntries, getAmountOfEntries } from "../controllers/timeEntryController.js";
 import { db } from "../../db.js";
-import { getUserFromToken } from "../controllers/userController.js";
+import { getUserFromToken, getUsers } from "../controllers/userController.js";
 
 const entryRouter = express.Router();
 const storage = multer.diskStorage({
@@ -89,6 +89,21 @@ entryRouter.get("/get-amount-of-entries", (request, response) => {
     const entries = getAmountOfEntries(user.id, start, end);
 
     response.status(200).json(entries);
+})
+
+entryRouter.get("/get-employee-entries", (request, response) => {
+    const employeeId = getUsers("%", request.body.email).id;
+    const start = request.body.start;
+    const end = request.body.end;
+
+    try {
+        const employeeEntries = getTimeEntries(employeeId, "%", start, end, "%");
+
+        response.status(200).json(employeeEntries);
+    }
+    catch (err) {
+        response.status(400).json({error: err});
+    }
 })
 
 export { entryRouter };
