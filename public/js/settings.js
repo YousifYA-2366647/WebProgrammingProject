@@ -62,28 +62,6 @@ function setupSettings() {
     }
 }
 
-function addEmployee(event) {
-    event.preventDefault();
-
-    let responseTxt = document.getElementById("response");
-
-    let body = { email: document.getElementById("emailInput").value, };
-    fetch("/add-employee", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-    }).then(res => {
-        if (res.status == 200) {
-            responseTxt.textContent = "request sent";
-        } else {
-            responseTxt.textContent = res.statusText;
-        }
-        setTimeout(function () {
-            responseTxt.textContent = "";
-        }, 3000);
-    });
-}
-
 function main() {
     let darkModeCheckbox = document.getElementById("darkModeButton");
     let darkModeLabel = document.getElementById("darkModeLabel");
@@ -126,9 +104,6 @@ function main() {
             listViewCheckbox.checked = true;
         }
     });
-
-    let requestForm = document.getElementById("addEmployee");
-    requestForm.addEventListener("submit", addEmployee);
 
     let saveButton = document.getElementById("save");
     let cancelButton = document.getElementById("cancel");

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include("../partials/head", {title: 'Login'}) %>
+</head>
+
+<body>
+  <%- include('../partials/navbar', {active: 'manage-employees'}); %>
+
+  <h1>Add emplyees:</h1>
+
+  <form id="addEmployee">
+    <label for="addEmployee">Request user to add as employee</label>
+    <input type="email" placeholder="johndoe@mail.com" id="emailInput" />
+    <span id="response"></span>
+    <button type="submit">Send</button>
+  </form>
+
+  <h1>Current employees:</h1>
+
+  <ul id="employeeList">
+    <!-- items added in js -->
+  </ul>
+
+  <script>
+    function createLi(id, name, email) {
+      let li = document.createElement("li");
+      li.textContent = id + ' ' + name + ' ' + email;
+      return li;
+    }
+
+    function addEmployee(event) {
+      event.preventDefault();
+
+      let responseTxt = document.getElementById("response");
+
+      let body = {
+        email: document.getElementById("emailInput").value,
+      };
+      fetch("/add-employee", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      }).then(res => {
+        if (res.status == 200) {
+          responseTxt.textContent = "request sent";
+        } else {
+          responseTxt.textContent = res.statusText;
+        }
+        setTimeout(function() {
+          responseTxt.textContent = "";
+        }, 3000);
+      });
+    }
+
+    function listEmployees(event) {
+      fetch("/get-employees", {
+        method: 'get',
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }).then(res => {
+        if (res.status == 200) {
+          return res.json();
+        }
+        window.alert(res.statusText);
+      }).then(json => {
+        employeeList = document.getElementById("employeeList");
+        for (employee of json.employees) {
+
+          employeeList.appendChild(createLi(employee.id, employee.name, employee.email));
+          console.log(employee);
+        }
+      });
+    }
+
+    let requestForm = document.getElementById("addEmployee");
+    requestForm.addEventListener("submit", addEmployee);
+    document.addEventListener("DOMContentLoaded", listEmployees);
+  </script>
+
+</body>
+
+</html>

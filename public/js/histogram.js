@@ -32,11 +32,46 @@ function create_chart(data) {
 }
 
 function updateChart(data) {
-    if (chart == null) {
-        create_chart(data);
+    const begin = dateList[document.getElementById("graph-week").selectedIndex][0].toISOString().substring(0, 10);
+    const end = dateList[document.getElementById("graph-week").selectedIndex][1].toISOString().substring(0, 10);
+    const url = "get-amount-of-entries?from=" + begin + "&to=" + end;
+
+    if(true) { // todo check if admin
+        fetch("/get-employees",{
+            method: 'get',
+            headers: { "Content-Type": "application/json" }
+        }).then(res=>{
+            console.log(res);
+            return res.json();
+        }).then(json=>{
+            console.log(json.employees);
+            for(employee of json.employees){
+                console.log(employee);
+            }
+        });
     }
-    chart.data.datasets[0].data = data;
-    chart.update();
+
+    fetch(url, {
+        method: 'get',
+        headers: { "Content-Type": "application/json" }
+    }).then(res => {
+        if (res.status != 200) {
+            alert(res.statusText);
+            return;
+        }
+        return res.json();
+    }).then(res => {
+        list = [];
+        for (i in res) {
+            list.push(res[i]);
+        }
+        if (chart == null) {
+            create_chart(list);
+            return;
+        }
+        chart.data.datasets[0].data = list;
+        chart.update();
+    });
 }
 
 function creatWeekOptions(year) {
@@ -82,27 +117,7 @@ function creatWeekOptions(year) {
 
 // week selector
 document.getElementById("graph-week").addEventListener('change', () => {
-    var begin = dateList[document.getElementById("graph-week").selectedIndex][0].toISOString().substring(0, 10);
-    var end = dateList[document.getElementById("graph-week").selectedIndex][1].toISOString().substring(0, 10);
-
-    const url = "get-amount-of-entries?from=" + begin + "&to=" + end;
-
-    fetch(url, {
-        method: 'get',
-        headers: { "Content-Type": "application/json" }
-    }).then(res => {
-        if (res.status != 200) {
-            alert(res.statusText);
-            return;
-        }
-        return res.json();
-    }).then(res => {
-        list = [];
-        for (i in res) {
-            list.push(res[i]);
-        }
-        updateChart(list);
-    });
+    updateChart();
 });
 
 
