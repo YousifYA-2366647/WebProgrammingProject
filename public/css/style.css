@@ -516,9 +516,9 @@ ul.entry-list li p {
 }
 
 #employeeList li {
-    
+    height: 100%;
     display: flex;
-    flex-direction: row;
+    flex-direction: row;    
 }
 
 #employeeList li label {
@@ -533,12 +533,12 @@ ul.entry-list li p {
 }
 
 #employeeList li button {
-    margin: 0;
+    margin: 2px;
     background-color: red;
     width: fit-content;
     font-size: small;
 }
 
 #employeeList li button:hover {
-    background-color: crimson;
+    background-color: brown;
 }

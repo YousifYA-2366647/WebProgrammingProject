@@ -24,11 +24,31 @@
   </ul>
 
   <script>
+    function getCookie(name) {
+      const cookies = document.cookie.split(';');
+      for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name + '=')) {
+          return cookie.substring(name.length + 1);
+        }
+      }
+      return null;
+    }
+
     function createLi(id, name, email) {
+      cookie = getCookie("selectedEmployees");
+      let idlist = cookie ? JSON.parse(cookie) : [];
+
       let li = document.createElement("li");
 
       let checkBox = document.createElement("input");
       checkBox.setAttribute("type", "checkbox");
+      checkBox.addEventListener('change', e => {
+        selectEmplyee(e.target.checked, id);
+      })
+      if (idlist.includes(id)) {
+        checkBox.checked = true;
+      }
       li.appendChild(checkBox);
 
       let label = document.createElement("label");
@@ -38,7 +58,7 @@
       let deleteBttn = document.createElement("button");
       deleteBttn.textContent = "Delete";
       deleteBttn.addEventListener('click', e => {
-        deleteEmployee(email);
+        deleteEmployee(id, name, email);
       })
       li.appendChild(deleteBttn);
 
@@ -62,6 +82,7 @@
       }).then(res => {
         if (res.status == 200) {
           responseTxt.textContent = "request sent";
+          document.getElementById("emailInput").value = "";
         } else {
           responseTxt.textContent = res.statusText;
         }
@@ -71,21 +92,48 @@
       });
     }
 
-    function deleteEmployee(email) {
+    function deleteEmployee(id, name, email) {
+      if (!window.confirm("Are you sure you want to delete: " + name + "?")) {
+        return;
+      }
+
+      cookie = getCookie("selectedEmployees");
+      let idlist = cookie ? JSON.parse(cookie) : [];
+
+      if (idlist.includes(id)) {
+        idlist.splice(idlist.indexOf(id), 1);
+      }
+
+      document.cookie = "selectedEmployees=" + JSON.stringify(idlist) + "; SameSite=Strict";
+
       fetch("/remove-employee", {
         method: 'POST',
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-        email: email
-      })
+          email: email
+        })
       }).then(res => {
-        if (response == 200) {
+        if (res.status == 200) {
+          location.reload();
           return;
         }
         window.alert(res.statusText);
       });
+    }
+
+    function selectEmplyee(checked, id) {
+      cookie = getCookie("selectedEmployees");
+      let idlist = cookie ? JSON.parse(cookie) : [];
+
+      if (idlist.includes(id) && !checked) {
+        idlist.splice(idlist.indexOf(id), 1);
+      } else if (!idlist.includes(id) && checked) {
+        idlist.push(id);
+      }
+
+      document.cookie = "selectedEmployees=" + JSON.stringify(idlist) + "; SameSite=Strict";
     }
 
     function listEmployees(event) {
@@ -102,13 +150,14 @@
       }).then(json => {
         employeeList = document.getElementById("employeeList");
         for (employee of json.employees) {
-          employeeList.appendChild(createLi(employee.id, employee.name, employee.email));
+          if (employee) {
+            employeeList.appendChild(createLi(employee.id, employee.name, employee.email));
+          }
         }
       });
     }
 
-    let requestForm = document.getElementById("addEmployee");
-    requestForm.addEventListener("submit", addEmployee);
+    document.getElementById("addEmployee").addEventListener("submit", addEmployee);
     document.addEventListener("DOMContentLoaded", listEmployees);
   </script>
 
