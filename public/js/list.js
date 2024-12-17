@@ -1,40 +1,23 @@
-entryList = document.getElementById("list-entry-list");
-
-fetch("/get-time-entries", {
-    method: "GET",
-    headers: { "Content-Type": "application/json" }
-}).then(res => {
-    if (res.status != 200) {
-        alert(res.statusText);
-        return;
-    }
-    return res.json();
-}).then(res => {
-    let entries = res.timeEntries;
+async function createList(event) {
+    var entryList = document.getElementById("list-entry-list");
+    var entries = [];
+    await getSelectedEmployeesEntries(entries);
+    await getOwnItems(entries);
 
     entries.sort((a, b) => { return a.start_time > b.start_time; }); // sort on start date
 
-    for (i = 0; i < entries.length; i++) {
-        li = document.createElement("li");
-
-        title = document.createElement("t");
-        title.textContent = entries[i].title;
-        li.appendChild(title);
-
-        startDate = new Date(entries[i].start_time);
-        endDate = new Date(entries[i].end_time);
-
-        date = document.createElement("p");
-        dateOptions = { day: 'numeric', month: 'numeric',year:'numeric', hour: '2-digit', minute:'2-digit'};
-        beginText = startDate.toLocaleDateString(LOCALE, dateOptions);
-        endText = endDate.toLocaleDateString(LOCALE, dateOptions);
-        date.textContent = beginText + ' - ' + endText;
-        li.appendChild(date);
-
-        description = document.createElement("p");
-        description.textContent = entries[i].description;
-        li.appendChild(description);
-
-        entryList.appendChild(li);
+    let cookie = getCookie("selectedEmployees");
+    let id_list = []
+    if (cookie) {
+        id_list = JSON.parse(cookie);
     }
-});
+    for (entry of entries) {
+        let colour = null;
+        if (id_list.includes(entry.user_id)) {
+            colour = getColour(entry.user_id);
+        }
+        entryList.appendChild(createLi(entry, colour));
+    }
+}
+
+document.addEventListener("DOMContentLoaded", createList);

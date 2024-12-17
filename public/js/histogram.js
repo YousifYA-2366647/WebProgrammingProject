@@ -10,16 +10,11 @@ function getWeekdayStringList() {
     return returnList;
 }
 
-function create_chart(data) {
-    chart = new Chart(document.getElementById('histogram'), {
+function create_chart() {
+    return chart = new Chart(document.getElementById('histogram'), {
         type: 'bar',
         data: {
             labels: getWeekdayStringList(),
-            datasets: [{
-                label: '# of Entries',
-                data: data,
-                borderWidth: 1
-            }]
         },
         options: {
             scales: {
@@ -31,27 +26,23 @@ function create_chart(data) {
     });
 }
 
-function updateChart(data) {
+function addDataToChart(label, data) {
+    let newDataSet = {
+        label: label,
+        borderWidth: 1,
+        data: data
+    }
+    chart.data.datasets.push(newDataSet);
+    chart.update();
+}
+
+
+async function addOwnAmount() {
     const begin = dateList[document.getElementById("graph-week").selectedIndex][0].toISOString().substring(0, 10);
     const end = dateList[document.getElementById("graph-week").selectedIndex][1].toISOString().substring(0, 10);
     const url = "get-amount-of-entries?from=" + begin + "&to=" + end;
 
-    if(true) { // todo check if admin
-        fetch("/get-employees",{
-            method: 'get',
-            headers: { "Content-Type": "application/json" }
-        }).then(res=>{
-            console.log(res);
-            return res.json();
-        }).then(json=>{
-            console.log(json.employees);
-            for(employee of json.employees){
-                console.log(employee);
-            }
-        });
-    }
-
-    fetch(url, {
+    await fetch(url, {
         method: 'get',
         headers: { "Content-Type": "application/json" }
     }).then(res => {
@@ -65,13 +56,49 @@ function updateChart(data) {
         for (i in res) {
             list.push(res[i]);
         }
-        if (chart == null) {
-            create_chart(list);
+
+    });
+    addDataToChart("# of entries", list);
+}
+
+
+async function addEmployeeAmount(id) {
+    const begin = dateList[document.getElementById("graph-week").selectedIndex][0].toISOString().substring(0, 10);
+    const end = dateList[document.getElementById("graph-week").selectedIndex][1].toISOString().substring(0, 10);
+    const url = "get-amount-employee-entries?id="+id+"&from=" + begin + "&to=" + end;
+
+    await fetch(url, {
+        method: 'get',
+        headers: { "Content-Type": "application/json" }
+    }).then(res => {
+        if (res.status != 200) {
+            alert(res.statusText);
             return;
         }
-        chart.data.datasets[0].data = list;
-        chart.update();
+        return res.json();
+    }).then(res => {
+        list = [];
+        for (i in res) {
+            list.push(res[i]);
+        }
     });
+    addDataToChart(id, list);
+}
+
+async function updateChart(data) {
+    chart.data.datasets = []; // clear graph
+
+    await addOwnAmount();
+
+    let cookie = getCookie("selectedEmployees");
+    if (!cookie) {
+        return;
+    }
+
+    let id_list = JSON.parse(cookie);
+    for (id of id_list) {
+        await addEmployeeAmount(id);
+    }
 }
 
 function creatWeekOptions(year) {
@@ -134,6 +161,6 @@ document.getElementById("graph-year").addEventListener('change', () => {
 
 document.getElementById("graph-year").value = (new Date()).getFullYear();
 
-var chart = null;
+var chart = create_chart();
 var dateList = creatWeekOptions(document.getElementById("graph-year").value);
 document.getElementById("graph-week").dispatchEvent(new Event("change"));

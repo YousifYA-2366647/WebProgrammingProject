@@ -1,9 +1,5 @@
 # To do:
 
-## front-end
-
-- [ ] login fixen
-
 ## Minimale vereisten
 
 - [x] Front-end ontwikkeling met behulp van HTML/CSS/Javascript - je mag daarbij gebruik maken van het Bootstrap framework. 

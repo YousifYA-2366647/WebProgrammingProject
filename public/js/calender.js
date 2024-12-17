@@ -1,5 +1,3 @@
-const LOCALE = 'nl-be'
-
 function calcDate(index) {
     var date = new Date(currentDate.getFullYear(), currentDate.getMonth());
 
@@ -48,6 +46,7 @@ function createCalender() {
     }
 }
 
+
 function toURLdateString(date) {
     s = selectedDate.getFullYear() + '-' + (selectedDate.getMonth() + 1) + '-';
     if (date.getDate().toString().length == 1) {
@@ -57,7 +56,7 @@ function toURLdateString(date) {
 }
 
 
-function dateClick(e) {
+async function dateClick(e) {
     if (selectedIndex) {
         document.getElementById(selectedIndex).classList.remove('clicked');
     }
@@ -72,47 +71,27 @@ function dateClick(e) {
     entryList = document.getElementById("calender-entry-list");
     entryList.innerHTML = ""; // lijst leegmaken
 
-    url = "/get-time-entries?date=" + toURLdateString(selectedDate);
+    entries = [];
+    await getOwnItems(entries, "date=" + toURLdateString(selectedDate));
+    let employeeQuery = "from=" + toURLdateString(selectedDate) + "T00:00:00&to=" + toURLdateString(selectedDate) + "T23:59:59";
+    await getSelectedEmployeesEntries(entries, employeeQuery);
 
-    fetch(url, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" }
-    }).then(res => {
-        if (res.status != 200) {
-            alert(res.statusText);
-            return;
+    entries.sort((a, b) => { return a.start_time > b.start_time; }); // sort on start date
+
+    let cookie = getCookie("selectedEmployees");
+    let id_list = []
+    if (cookie) {
+        id_list = JSON.parse(cookie);
+    }
+
+    for (entry of entries) {
+        let colour = null;
+        if (id_list.includes(entry.user_id)) {
+            colour = getColour(entry.user_id);
         }
-        return res.json();
-    }).then(res => {
-        let entries = res.timeEntries;
-
-        for (i = 0; i < entries.length; i++) {
-            li = document.createElement("li");
-
-            title = document.createElement("t");
-            title.textContent = entries[i].title;
-            li.appendChild(title);
-
-            date = document.createElement("p");
-            dateOptions = { day: 'numeric', month: 'numeric', hour: '2-digit', minute:'2-digit'};
-            beginText = (new Date(entries[i].start_time)).toLocaleString(LOCALE, dateOptions);
-            endText = (new Date(entries[i].end_time)).toLocaleString(LOCALE, dateOptions);
-            date.textContent = beginText;
-            if (beginText != endText) {
-                // twee datums als begin en eind datum anders zijn
-                date.textContent += ' - ' + endText;
-            }
-            li.appendChild(date);
-
-            description = document.createElement("p");
-            description.textContent = entries[i].description;
-            li.appendChild(description);
-
-            entryList.appendChild(li);
-        }
-    });
+        entryList.appendChild(createLi(entry, colour));
+    }
 }
-
 
 
 const today = new Date();

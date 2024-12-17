@@ -6,8 +6,10 @@ import PDFDocument from "pdfkit";
 import { checkEntryRequest } from "../middleware/formChecking.js";
 import { getCookies, tokenKey } from "../middleware/authorization.js";
 import { insertEntry, getTimeEntries, getAmountOfEntries } from "../controllers/timeEntryController.js";
+import { getUserFromToken, isEmployee } from "../controllers/userController.js";
 import { getEmployees, getUserFromToken, getUsers } from "../controllers/userController.js";
 import { getUserSettings } from "../controllers/settingsController.js";
+
 
 const entryRouter = express.Router();
 const storage = multer.diskStorage({
@@ -49,7 +51,7 @@ entryRouter.get("/analyse", (request, response) => {
     }
 
     let isAdmin = getUserSettings(getUserFromToken(token).id).isAdmin;
-    response.render('pages/analyse', {isAdmin: isAdmin});
+    response.render('pages/analyse', { isAdmin: isAdmin });
 });
 
 entryRouter.get("/input", (request, response) => {
@@ -60,7 +62,7 @@ entryRouter.get("/input", (request, response) => {
     }
 
     let isAdmin = getUserSettings(getUserFromToken(token).id).isAdmin;
-    response.render('pages/input', {isAdmin: isAdmin});
+    response.render('pages/input', { isAdmin: isAdmin });
 });
 
 entryRouter.get("/get-time-entries", (request, response) => {
@@ -84,6 +86,44 @@ entryRouter.get("/get-time-entries", (request, response) => {
         response.status(401).json({ error: err });
     }
 });
+
+entryRouter.get("/get-amount-employee-entries", (request, response) => {
+    const employeeId = request.query.id;
+    const start = request.query.from;
+    const end = request.query.to;
+
+    const user = getUserFromToken(getCookies(request).token);
+
+    if (!isEmployee(user.id, employeeId)) {
+        response.status(401).json({ error: "unauthorized" }).end();
+        return;
+    }
+
+    const entries = getAmountOfEntries(employeeId, start, end);
+    response.status(200).json(entries);
+
+})
+
+entryRouter.get("/get-employee-entries", (request, response) => {
+    const employeeId = parseInt(request.query.id);
+    const start = request.query.start == null ? request.query.from : "0000-01-01 00:00:00";
+    const end = request.query.end == null ? request.query.to : "9999-12-31 23:59:59";
+
+    const user = getUserFromToken(getCookies(request).token);
+    if (!isEmployee(user.id, employeeId)) {
+        response.status(401).json({ error: "unauthorized" }).end();
+        return;
+    }
+
+    try {
+        const employeeEntries = getTimeEntries(employeeId, "%", start, end, "%");
+
+        response.status(200).json({ employeeEntries: employeeEntries });
+    }
+    catch (err) {
+        response.status(400).json({ error: err });
+    }
+})
 
 entryRouter.get("/get-amount-of-entries", (request, response) => {
     const start = request.query.from;
@@ -113,9 +153,9 @@ entryRouter.get("/get-employee-entries", (request, response) => {
         }
     }
     catch (err) {
-        response.status(400).json({error: err});
+        response.status(400).json({ error: err });
     }
-})
+});
 
 entryRouter.get("/export-list", async (request, response) => {
     try {
@@ -131,7 +171,7 @@ entryRouter.get("/export-list", async (request, response) => {
 
         document.pipe(response);
 
-        document.fontSize(20).text('Time Entries: ' + user.email, {align: 'center'});
+        document.fontSize(20).text('Time Entries: ' + user.email, { align: 'center' });
         document.moveDown();
 
         timeEntries.forEach(entry => {
@@ -151,7 +191,7 @@ entryRouter.get("/export-list", async (request, response) => {
 
                     try {
                         document.image(file, {
-                            
+
                             fit: [400, 300],
                             align: 'center',
                             valign: 'center'
@@ -171,7 +211,7 @@ entryRouter.get("/export-list", async (request, response) => {
         document.end();
     }
     catch (err) {
-        response.status(500).json({error: "Failed to generate PDF"});
+        response.status(500).json({ error: "Failed to generate PDF" });
     }
 })
 
