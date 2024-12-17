@@ -9,7 +9,7 @@ import { insertEntry, getTimeEntries, getAmountOfEntries, getTimeEntrieFromId } 
 import { getEmployees, getUserFromToken, isEmployee } from "../controllers/userController.js";
 import { getUserSettings } from "../controllers/settingsController.js";
 import { addNotification } from "../controllers/notificationController.js";
-import { writeFile } from "fs";
+import { readFile, writeFile } from "fs";
 import zip from "express-zip"
 
 
@@ -268,15 +268,33 @@ entryRouter.get("/get-amount-employee-entries", (request, response) => {
     }
 })
 
+var waiting = false;
 entryRouter.get("/weather-info", (req, res) => {
+    if (waiting) {
+        readFile(path.join(process.cwd(), "weather.txt"), 'utf8', (err, d) => {
+            if (err) {
+                return;
+            }
+            let data = JSON.parse(d);
+            if (waiting) {
+                res.status(200).json(data);
+                return
+            }
+        });
+        return;
+    }
+
+    waiting = true;
+    // do api call once an hour
+    setTimeout(function () { waiting = false; }, 3600000);
+
     let url = "http://api.weatherstack.com/current?access_key=" + process.env.API_KEY + "&query=fetch:ip";
     fetch(url, {
         method: "get"
     }).then(res => {
-        console.log(res);
         return res.json();
     }).then(json => {
-        writeFile('output.txt', JSON.stringify(json), e => { });
+        writeFile('weather.txt', JSON.stringify(json), e => { });
         if (json.succes != null) {
             console.log("API FAILED: " + json.error.info);
             res.status(502).json(json.error);
@@ -285,6 +303,7 @@ entryRouter.get("/weather-info", (req, res) => {
         res.status(200).json(json);
         return;
     });
+
 });
 
 export { entryRouter };
