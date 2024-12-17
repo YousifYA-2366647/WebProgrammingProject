@@ -4,7 +4,6 @@ import { insertUser, getUsers, getEmployees, getUserFromToken, addEmployeeToAdmi
 import { checkRegisterRequest } from "../middleware/formChecking.js";
 import { authorizeRole, createToken, getCookies } from "../middleware/authorization.js";
 import { getUserSettings, insertSettings } from "../controllers/settingsController.js";
-import { addNotification } from "../controllers/notificationController.js";
 
 const logRouter = express.Router();
 
@@ -49,7 +48,7 @@ logRouter.get("/logout", (request, response) => {
 // register
 logRouter.post("/register", express.json(), checkRegisterRequest(), async (req, res) => {
     try {
-        const result = await insertUser(req.body.username, req.body.email, req.body.password, "");
+        const result = await insertUser(req.body.username, req.body.email, req.body.password);
         insertSettings(result.lastInsertRowid, 0, "list", req.body.isAdmin);
         res.status(201).json({ id: result.lastInsertRowid });
 

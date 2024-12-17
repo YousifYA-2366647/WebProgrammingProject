@@ -3,11 +3,11 @@ import { tokenKey } from "../middleware/authorization.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-export async function insertUser(username, email, password, employees) {
+export async function insertUser(username, email, password) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const insertUser = db.prepare("INSERT INTO users (name, email, password, employees) VALUES (?, ?, ?, ?)")
-    const result = insertUser.run(username, email, hashedPassword, employees);
+    const insertUser = db.prepare("INSERT INTO users (name, email, password, employees, boss) VALUES (?, ?, ?, ?, ?)")
+    const result = insertUser.run(username, email, hashedPassword, "", "");
     return result;
 };
 
@@ -33,7 +33,12 @@ export function addEmployeeToAdmin(admin, employeeId) {
     if (employees.indexOf(employeeId.toString()) == -1) {
         employees.push(employeeId.toString());
 
+        const employee = getUserById(employeeId);
+        let bosses = employee.boss == "" ? []: employee.boss.split(",");
+        bosses.push(admin.id.toString());
+
         db.prepare("UPDATE users SET employees = ? WHERE id = ?").run(employees.join(","), admin.id);
+        db.prepare("UPDATE users SET boss = ? WHERE id = ?").run(bosses.join(","), employeeId);
         return true;
     }
     else {
@@ -47,7 +52,7 @@ export function getEmployees(userId) {
 
     let listOfEmployees = []
     employeeList.forEach((employeeId) => {
-        listOfEmployees.push(db.prepare("SELECT * FROM users WHERE id = ?").all(employeeId)[0]);
+        listOfEmployees.push(getUserById(employeeId));
     })
 
     return listOfEmployees;
@@ -63,12 +68,33 @@ export function removeEmployee(userId, employeeId) {
     const index = employees.indexOf(employeeId.toString());
     if (index > -1) {
         employees.splice(index, 1);
+
+        const employee = getUserById(employeeId);
+        let bosses = employee.boss.split(",");
+        const bossIndex = bosses.indexOf(userId.toString());
+        if (bossIndex > -1) {
+            bosses.splice(bossIndex, 1);
+        }
+
         db.prepare("UPDATE users SET employees = ? WHERE id = ?").run(employees.join(","), userId);
+        db.prepare("UPDATE users SET boss = ? WHERE id = ?").run(bosses.join(","), employeeId);
         return true;
     }
     else {
         return false;
     }
+}
+
+export function getBosses(employeeId) {
+    const bosses = db.prepare("SELECT boss FROM users WHERE id = ?").get(employeeId).boss;
+    let bossList = bosses.split(",");
+
+    let listOfbosses = []
+    bossList.forEach((bossId) => {
+        listOfbosses.push(getUserById(bossId));
+    })
+
+    return listOfbosses;
 }
 
 export function getUserFromToken(userToken) {

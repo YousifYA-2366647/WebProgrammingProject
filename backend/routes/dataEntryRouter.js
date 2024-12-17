@@ -8,6 +8,7 @@ import { getCookies, tokenKey } from "../middleware/authorization.js";
 import { insertEntry, getTimeEntries, getAmountOfEntries } from "../controllers/timeEntryController.js";
 import { getUserFromToken, isEmployee } from "../controllers/userController.js";
 import { getUserSettings } from "../controllers/settingsController.js";
+import { addNotification } from "../controllers/notificationController.js";
 
 
 const entryRouter = express.Router();
@@ -25,21 +26,42 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 entryRouter.post("/time-entry", upload.any(), checkEntryRequest(), express.json(), (req, res) => {
-    const userId = jwt.verify(getCookies(req).token, tokenKey).userId;
-    const title = req.body.title;
-    const start = req.body.start;
-    const end = req.body.end;
-    const description = req.body.description;
-    let files = [];
+    try {
+        const user = getUserFromToken(getCookies(req).token);
+        const title = req.body.title;
+        const start = req.body.start;
+        const end = req.body.end;
+        const description = req.body.description;
+        let files = [];
+    
+        for (const file of req.files) {
+            files.push(file.path);
+        }
+    
+        const result = insertEntry(user.id, title, start, end, description, JSON.stringify(files));
 
-    for (const file of req.files) {
-        console.log(file.mimetype);
-        files.push(file.path);
+        const entry = {
+            id: result.lastInsertRowid,
+            title: title,
+            start: start,
+            end: end,
+            description: description,
+            files: JSON.stringify(files)
+        }
+        
+        console.log(entry);
+
+        if (user.boss != "") {
+            user.boss.split(",").forEach((bossId) => {
+                addNotification(user.id, parseInt(bossId), entry, user.name + " made a new time entry.", new Date().toLocaleString());
+            })
+        }
+    
+        res.status(201).json({ message: "Entry submitted successfully" });
     }
-
-    insertEntry(userId, title, start, end, description, JSON.stringify(files));
-
-    res.status(201).json({ message: "Entry submitted successfully" });
+    catch (err) {
+        res.status(400).json({error: err});
+    }
 })
 
 entryRouter.get("/analyse", (request, response) => {

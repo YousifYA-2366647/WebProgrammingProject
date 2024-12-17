@@ -64,7 +64,8 @@ async function prepareUsers() {
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
-    employees TEXT NOT NULL
+    employees TEXT NOT NULL,
+    boss TEXT NOT NULL
     ) STRICT`).run();
 
   const exampleUsers = [
@@ -75,7 +76,7 @@ async function prepareUsers() {
   ];
 
   const findUser = db.prepare("SELECT id FROM users WHERE name = ?");
-  const insertUser = db.prepare("INSERT INTO users (name, email, password, employees) VALUES (?, ?, ?, ?)");
+  const insertUser = db.prepare("INSERT INTO users (name, email, password, employees, boss) VALUES (?, ?, ?, ?, ?)");
 
   const makeUserSettings = db.prepare("INSERT INTO settings (user_id, usesDarkMode, analyseView, isAdmin) VALUES (?, ?, ?, ?)")
 
@@ -84,7 +85,7 @@ async function prepareUsers() {
   exampleUsers.forEach((user) => {
     if (!findUser.get(user.name)) {
       const email = user.name + "@gmail.com";
-      insertUser.run(user.name, email, hashedPassword, "");
+      insertUser.run(user.name, email, hashedPassword, "", "");
       const currentUser = findUser.all(user.name)[0];
       makeUserSettings.run(currentUser.id, 0, "list", 1);
     }

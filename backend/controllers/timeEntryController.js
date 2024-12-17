@@ -14,7 +14,7 @@ export function getTimeEntries(userId, title = "%", start = "0000-01-01 00:00:00
 };
 
 export function insertEntry(userId, title, start, end, description, files) {
-    const insertEntry = db.prepare(`
+    return db.prepare(`
         INSERT INTO time_entries (user_id, title, start_time, end_time, description, files) 
         VALUES (?, ?, ?, ?, ?, ?)
       `).run(userId, title, start, end, description, files);

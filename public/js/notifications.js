@@ -28,7 +28,12 @@ function removeNotification(id) {
     });
 }
 
-function acceptNotification(id) {
+function acceptNotification(id, entryId) {
+    if (entryId == null) {
+        removeNotification(id);
+        return;
+    }
+
     let body = {
         notificationId: id
     }
@@ -94,7 +99,7 @@ function createNotification(notification) {
     let acceptButton = document.createElement("button");
     acceptButton.id = "acceptNotification";
     acceptButton.addEventListener('click', function() {
-        acceptNotification(notificationFlare.id)
+        acceptNotification(notificationFlare.id, notification.entry_id)
     });
     acceptButton.textContent = "✓";
 
