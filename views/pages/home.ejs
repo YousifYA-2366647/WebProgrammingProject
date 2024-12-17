@@ -10,7 +10,13 @@
   <%- include('../partials/navbar', {active: 'home'}); %>
 
   <h1>Home</h1>
-  <img src="https://assets.weatherstack.com/images/wsymbols01_png_64/wsymbol_0001_sunny.png" alt="Weather-icon" id="weather-icon" />
+
+  <h2>Weather</h2>
+
+  <div>
+    <p id="weather-forecast"></p>
+    <img src="https://assets.weatherstack.com/images/wsymbols01_png_64/wsymbol_0001_sunny.png" alt="Weather-icon" id="weather-icon" />
+  </div>
 
   <script src="js/home.js"></script>
 </body>
