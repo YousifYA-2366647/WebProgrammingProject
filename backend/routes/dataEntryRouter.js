@@ -6,7 +6,6 @@ import PDFDocument from "pdfkit";
 import { checkEntryRequest } from "../middleware/formChecking.js";
 import { getCookies, tokenKey } from "../middleware/authorization.js";
 import { insertEntry, getTimeEntries, getAmountOfEntries } from "../controllers/timeEntryController.js";
-import { getUserFromToken, isEmployee } from "../controllers/userController.js";
 import { getEmployees, getUserFromToken, getUsers } from "../controllers/userController.js";
 import { getUserSettings } from "../controllers/settingsController.js";
 
