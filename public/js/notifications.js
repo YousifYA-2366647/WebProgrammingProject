@@ -29,7 +29,7 @@ function removeNotification(id) {
 }
 
 function acceptNotification(id, entryId) {
-    if (entryId == null) {
+    if (entryId != null) {
         removeNotification(id);
         return;
     }

@@ -428,17 +428,13 @@ ul.entry-list li p {
 
 .notificationFlare {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 1000px;
+    grid-template-columns: 10fr 1fr;
+    width: 1300px;
     border: solid black 2px;
     background-color: #dddddd;
 }
 
 .notificationFlare.dark-mode {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 1000px;
-    border: solid black 2px;
     background-color: #41464b;
 }
 
@@ -446,14 +442,15 @@ ul.entry-list li p {
     display: grid;
     grid-template-rows: 1 1 1;
     margin-left: 10px;
+    justify-self: left;
 }
 
 #actionButtons {
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: 20px;
-    align-items: center;
-    justify-content: center;
+    align-content: center;
+    float: right;
 }
 
 #notificationTitle {
@@ -488,6 +485,8 @@ ul.entry-list li p {
     background-color: darkgrey;
     width: 50px;
     height: 40px;
+    float: right;
+    margin-right: 20px;
 }
 
 #acceptNotification:hover,

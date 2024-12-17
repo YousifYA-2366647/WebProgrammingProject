@@ -50,6 +50,7 @@ entryRouter.post("/time-entry", upload.any(), checkEntryRequest(), express.json(
         }
         
         console.log(entry);
+        console.log(user.boss);
 
         if (user.boss != "") {
             user.boss.split(",").forEach((bossId) => {
