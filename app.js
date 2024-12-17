@@ -5,9 +5,11 @@ import { entryRouter } from "./backend/routes/dataEntryRouter.js"
 import { settingsRouter } from "./backend/routes/settingsRouter.js";
 import { notificationRouter } from "./backend/routes/notificationRouter.js";
 import { employeeRouter } from "./backend/routes/employeeRouter.js";
+import { configDotenv } from "dotenv";
 
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
+configDotenv();
 
 export {app};
 
@@ -75,6 +77,8 @@ app.get("/get-amount-employee-entries", entryRouter);
 app.get("/export-list", entryRouter);
 
 app.get("/download-files", entryRouter);
+
+app.get("/weather-info", entryRouter);
 
 // notifications
 app.get("/notifications", notificationRouter);

@@ -2,14 +2,27 @@
 <html lang="en">
 
 <head>
-    <%- include("../partials/head", {title: 'Home'}) %>
+  <%- include("../partials/head", {title: 'Home'}) %>
 </head>
 
 <body>
 
-    <%- include('../partials/navbar', {active: 'home'}); %>
+  <%- include('../partials/navbar', {active: 'home'}); %>
 
-    <h1>Home</h1>
+  <h1>Home</h1>
+  <img src="https://assets.weatherstack.com/images/wsymbols01_png_64/wsymbol_0001_sunny.png" alt="Weather-icon" />
+
+  <script>
+    fetch("/weather-info", {
+      method: "GET"
+    }).then(res => {
+      if (res.status == 200) {
+        return res.json();
+      }
+    }).then(json => {
+      console.log(json);
+    });
+  </script>
 </body>
 
 </html>

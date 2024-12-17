@@ -4,3 +4,4 @@
 # database temp files
 *-shm
 *-wal
+.env

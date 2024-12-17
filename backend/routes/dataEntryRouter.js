@@ -9,6 +9,7 @@ import { insertEntry, getTimeEntries, getAmountOfEntries, getTimeEntrieFromId } 
 import { getEmployees, getUserFromToken, isEmployee } from "../controllers/userController.js";
 import { getUserSettings } from "../controllers/settingsController.js";
 import { addNotification } from "../controllers/notificationController.js";
+import { writeFile } from "fs";
 import zip from "express-zip"
 
 
@@ -266,5 +267,24 @@ entryRouter.get("/get-amount-employee-entries", (request, response) => {
         response.status(400).json({ error: err });
     }
 })
+
+entryRouter.get("/weather-info", (req, res) => {
+    let url = "http://api.weatherstack.com/current?access_key=" + process.env.API_KEY + "&query=fetch:ip";
+    fetch(url, {
+        method: "get"
+    }).then(res => {
+        console.log(res);
+        return res.json();
+    }).then(json => {
+        writeFile('output.txt', JSON.stringify(json), e => { });
+        if (json.succes != null) {
+            console.log("API FAILED: " + json.error.info);
+            res.status(502).json(json.error);
+            return;
+        }
+        res.status(200).json(json);
+        return;
+    });
+});
 
 export { entryRouter };
