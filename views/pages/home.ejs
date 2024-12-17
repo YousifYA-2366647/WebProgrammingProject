@@ -10,12 +10,23 @@
   <%- include('../partials/navbar', {active: 'home'}); %>
 
   <h1>Home</h1>
+  
+  <h2>Welcome bij Sunday Time Tracking</h2>
+  
+  door Yousif Abbas en Jordy Meier
 
   <h2>Weather</h2>
 
   <div>
     <p id="weather-forecast"></p>
-    <img src="https://assets.weatherstack.com/images/wsymbols01_png_64/wsymbol_0001_sunny.png" alt="Weather-icon" id="weather-icon" />
+    <img src="https://assets.weatherstack.com/images/wsymbols01_png_64/wsymbol_0001_sunny.png" alt="Weather-icon" id="weather-icon" style="margin-left: 25%;" />
+  </div>
+
+  <h2>Go to:</h2>
+  <div>
+    Visualize your inputs: <a href="analyse">analyse</a>
+    <br>
+    Create a new time entry: <a href="input">input</a>
   </div>
 
   <script src="js/home.js"></script>
