@@ -27,6 +27,10 @@ label {
     color: #41464b;
 }
 
+t {
+    font-size: 20px;
+}
+
 label.dark-mode {
     color: #eaeaea;
 }
@@ -125,6 +129,16 @@ ul {
 li {
     display: inline;
     float: left;
+}
+
+
+.loginform {
+    width: 200px;
+
+    @media (any-pointer: coarse) {
+        /* do your own styles */
+        width: 400px;
+    }
 }
 
 
@@ -283,7 +297,6 @@ ul.entry-list li t {
     align-self: center;
     color: cornflowerblue;
     font-weight: bold;
-    font-size: large;
 }
 
 ul.entry-list li p {
@@ -556,7 +569,8 @@ ul.entry-list li p {
     border-radius: 0;
 }
 
-.idColumn, .emailColumn{
+.idColumn,
+.emailColumn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -566,3 +580,38 @@ ul.entry-list li p {
     height: 100%;
 }
 
+/* gsm */
+@media (any-pointer: coarse) {
+    h1 {
+        padding-top: 80px;
+        font-size: 60px;
+    }
+
+    label {
+        font-size: 30px;
+    }
+
+    button {
+        font-size: 30px;
+    }
+
+    input {
+        font-size: 30px;
+    }
+
+    a {
+        font-size: 30px;
+    }
+
+    t {
+        font-size: 50px;
+    }
+
+    p {
+        font-size: 40px;
+    }
+
+    select {
+        font-size: 30px;
+    }
+}
