@@ -55,7 +55,7 @@ export function getEmployees(userId) {
 
 export function isEmployee(userId, employeeId) {
     const employees = db.prepare("SELECT employees FROM users WHERE id = ?").get(userId).employees;
-    return employees.includes(employeeId);
+    return employees.includes(employeeId.toString());
 }
 
 export function removeEmployee(userId, employeeId) {

@@ -6,14 +6,14 @@ import PDFDocument from "pdfkit";
 import { checkEntryRequest } from "../middleware/formChecking.js";
 import { getCookies, tokenKey } from "../middleware/authorization.js";
 import { insertEntry, getTimeEntries, getAmountOfEntries } from "../controllers/timeEntryController.js";
-import { getEmployees, getUserFromToken, getUsers } from "../controllers/userController.js";
+import { getUserFromToken, isEmployee } from "../controllers/userController.js";
 import { getUserSettings } from "../controllers/settingsController.js";
 
 
 const entryRouter = express.Router();
 const storage = multer.diskStorage({
     destination: (req, file, callback) => {
-        callback(null, "/public/tmp/uploads/")
+        callback(null, "public/tmp/uploads/")
     },
     filename: (req, file, callback) => {
         const fileType = path.extname(file.originalname);
@@ -71,7 +71,7 @@ entryRouter.get("/get-time-entries", (request, response) => {
 
         const user = getUserFromToken(getCookies(request).token);
 
-        let entries = JSON.stringify("");
+        let entries = [];
         if (!date) {
             entries = getTimeEntries(user.id);
         }
@@ -86,27 +86,10 @@ entryRouter.get("/get-time-entries", (request, response) => {
     }
 });
 
-entryRouter.get("/get-amount-employee-entries", (request, response) => {
-    const employeeId = request.query.id;
-    const start = request.query.from;
-    const end = request.query.to;
-
-    const user = getUserFromToken(getCookies(request).token);
-
-    if (!isEmployee(user.id, employeeId)) {
-        response.status(401).json({ error: "unauthorized" }).end();
-        return;
-    }
-
-    const entries = getAmountOfEntries(employeeId, start, end);
-    response.status(200).json(entries);
-
-})
-
 entryRouter.get("/get-employee-entries", (request, response) => {
     const employeeId = parseInt(request.query.id);
-    const start = request.query.start == null ? request.query.from : "0000-01-01 00:00:00";
-    const end = request.query.end == null ? request.query.to : "9999-12-31 23:59:59";
+    const start = request.query.from != null ? request.query.from : "0000-01-01 00:00:00";
+    const end = request.query.to != null ? request.query.to : "9999-12-31 23:59:59";
 
     const user = getUserFromToken(getCookies(request).token);
     if (!isEmployee(user.id, employeeId)) {
@@ -134,27 +117,6 @@ entryRouter.get("/get-amount-of-entries", (request, response) => {
 
     response.status(200).json(entries);
 })
-
-entryRouter.get("/get-employee-entries", (request, response) => {
-    const employee = getUsers("%", request.body.email);
-    const start = request.body.start;
-    const end = request.body.end;
-
-    try {
-        const adminEmployees = getEmployees(getUserFromToken(getCookies(request).token).id);
-        if (adminEmployees.includes(employee)) {
-            const employeeEntries = getTimeEntries(employee.id, "%", start, end, "%");
-    
-            response.status(200).json(employeeEntries);
-        }
-        else {
-            throw new Error("user is not an employee of this admin.");
-        }
-    }
-    catch (err) {
-        response.status(400).json({ error: err });
-    }
-});
 
 entryRouter.get("/export-list", async (request, response) => {
     try {
@@ -211,6 +173,27 @@ entryRouter.get("/export-list", async (request, response) => {
     }
     catch (err) {
         response.status(500).json({ error: "Failed to generate PDF" });
+    }
+})
+
+entryRouter.get("/get-amount-employee-entries", (request, response) => {
+    try {
+        const employeeId = request.query.id;
+        const start = request.query.from;
+        const end = request.query.to;
+    
+        const user = getUserFromToken(getCookies(request).token);
+    
+        if (!isEmployee(user.id, employeeId)) {
+            response.status(401).json({ error: "unauthorized" }).end();
+            return;
+        }
+    
+        const entries = getAmountOfEntries(employeeId, start, end);
+        response.status(200).json(entries);
+    }
+    catch (err) {
+        response.status(400).json({error: err});
     }
 })
 
