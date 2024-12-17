@@ -222,6 +222,7 @@ div.grid-container {
 div.grid-item {
     border-radius: 5px;
     border: 1px solid #ddd;
+    height: max-content;
 }
 
 ul.calender-header {

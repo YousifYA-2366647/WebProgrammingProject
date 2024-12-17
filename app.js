@@ -74,6 +74,8 @@ app.get("/get-amount-employee-entries", entryRouter);
 
 app.get("/export-list", entryRouter);
 
+app.get("/download-files", entryRouter);
+
 // notifications
 app.get("/notifications", notificationRouter);
 

@@ -13,6 +13,15 @@ export function getTimeEntries(userId, title = "%", start = "0000-01-01 00:00:00
         `).all(userId, title, end, start, description);
 };
 
+export function getTimeEntrieFromId(userId, entryId){
+    return db.prepare(`
+        SELECT *
+        FROM time_entries
+        WHERE user_id = ? AND id = ?
+        `).get(userId, entryId);
+
+}
+
 export function insertEntry(userId, title, start, end, description, files) {
     return db.prepare(`
         INSERT INTO time_entries (user_id, title, start_time, end_time, description, files) 

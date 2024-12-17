@@ -36,6 +36,17 @@ function createLi(entry, colour = null) {
     description = document.createElement("p");
     description.textContent = entry.description;
     li.appendChild(description);
+
+    if (JSON.parse(entry.files).length > 0) {
+        let downloadLink = document.createElement("a");
+        downloadLink.textContent = "Files";
+        downloadLink.download = "picture.jpg";
+        let url = "/download-files?id=" + entry.id;
+        downloadLink.setAttribute('href', url);
+        li.appendChild(downloadLink);
+    }
+
+
     return li;
 }
 

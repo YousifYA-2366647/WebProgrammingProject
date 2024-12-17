@@ -5,16 +5,17 @@ import path from "path";
 import PDFDocument from "pdfkit";
 import { checkEntryRequest } from "../middleware/formChecking.js";
 import { getCookies, tokenKey } from "../middleware/authorization.js";
-import { insertEntry, getTimeEntries, getAmountOfEntries } from "../controllers/timeEntryController.js";
+import { insertEntry, getTimeEntries, getAmountOfEntries, getTimeEntrieFromId } from "../controllers/timeEntryController.js";
 import { getUserFromToken, isEmployee } from "../controllers/userController.js";
 import { getUserSettings } from "../controllers/settingsController.js";
 import { addNotification } from "../controllers/notificationController.js";
+import zip from "express-zip"
 
 
 const entryRouter = express.Router();
 const storage = multer.diskStorage({
     destination: (req, file, callback) => {
-        callback(null, "public/tmp/uploads/")
+        callback(null, "uploads/")
     },
     filename: (req, file, callback) => {
         const fileType = path.extname(file.originalname);
@@ -35,6 +36,7 @@ entryRouter.post("/time-entry", upload.any(), checkEntryRequest(), express.json(
         let files = [];
 
         for (const file of req.files) {
+            console.log("HERE", file.path);
             files.push(file.path);
         }
 
@@ -102,11 +104,29 @@ entryRouter.get("/get-time-entries", (request, response) => {
             entries = getTimeEntries(user.id, "%", date.concat("T00:00:00"), date.concat("T23:59:59"), "%");
         }
 
-        console.log(entries);
         response.status(200).json({ timeEntries: entries });
     } catch (err) {
         response.status(401).json({ error: err });
     }
+});
+
+entryRouter.get("/download-files", (req, res) => {
+    const user = getUserFromToken(getCookies(req).token);
+    let entry = getTimeEntrieFromId(user.id, req.query.id);
+    let files = JSON.parse(entry.files);
+
+    if (files.length == 1) {
+        res.download(path.join(process.cwd(), files[0]));
+    } else {
+        let zipFiles = [];
+
+        for(let file of files){
+            zipFiles.push({path: file, name:path.basename(file)});
+        }
+
+        res.zip(zipFiles);
+    }
+
 });
 
 entryRouter.get("/get-employee-entries", (request, response) => {
