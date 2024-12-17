@@ -370,18 +370,8 @@ ul.entry-list li p {
 
 #analyseViewChoices {
     display: grid;
-    grid-template-columns: auto auto;
-    grid-template-rows: auto;
     gap: 80px;
     margin-bottom: 100px;
-}
-
-#listDivision,
-#histogramDivision {
-    display: grid;
-    grid-template-columns: auto auto;
-    grid-template-rows: auto;
-    gap: 30px;
 }
 
 #histogramChoice,

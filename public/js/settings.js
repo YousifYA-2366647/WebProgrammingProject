@@ -14,16 +14,14 @@ function saveSettings(event) {
     event.preventDefault();
 
     let darkModeCheckbox = document.getElementById("darkModeButton");
-    let histogramCheckbox = document.getElementById("histogramChoice");
+    let optionSelector = document.getElementById("settings-options");
 
     let usesDarkMode = 0;
-    let analyse = "list";
     if (darkModeCheckbox.checked) {
         usesDarkMode = 1;
     }
-    if (histogramCheckbox.checked) {
-        analyse = "histogram";
-    }
+
+    let analyse = optionSelector.value.toLowerCase();
 
     const settingsBody = {
         darkMode: usesDarkMode,
@@ -47,28 +45,30 @@ function saveSettings(event) {
 function setupSettings() {
     let darkModeCheckbox = document.getElementById("darkModeButton");
     let darkModeLabel = document.getElementById("darkModeLabel");
-    let histogramCheckbox = document.getElementById("histogramChoice");
-    let listViewCheckbox = document.getElementById("listChoice");
+    let optionSelector = document.getElementById("settings-options");
 
     if (getCookieValue('darkMode') == 1) {
         darkModeCheckbox.checked = true;
         darkModeLabel.textContent = "Toggle Light Mode";
     }
-    if (getCookieValue('analyseView') == "list") {
-        listViewCheckbox.checked = true;
-    }
-    else if (getCookieValue('analyseView') == "histogram") {
-        histogramCheckbox.checked = true;
+    switch (getCookieValue('analyseView')) {
+        case "list":
+            optionSelector.selectedIndex = 0;
+            break;
+        case "calender":
+            optionSelector.selectedIndex = 1;
+            break;
+        case "histogram":
+            optionSelector.selectedIndex = 2;
+            break;
     }
 }
 
 function main() {
     let darkModeCheckbox = document.getElementById("darkModeButton");
     let darkModeLabel = document.getElementById("darkModeLabel");
-    let histogramCheckbox = document.getElementById("histogramChoice");
-    let listViewCheckbox = document.getElementById("listChoice");
 
-    darkModeCheckbox.checked = histogramCheckbox.checked = listViewCheckbox.checked = false;
+    darkModeCheckbox.checked = false;
 
     setupSettings();
 
@@ -85,24 +85,6 @@ function main() {
         else {
             darkModeLabel.textContent = "Toggle Dark Mode";
         }
-    })
-
-    histogramCheckbox.addEventListener("change", function () {
-        if (listViewCheckbox.checked) {
-            listViewCheckbox.checked = false;
-        }
-        if (!histogramCheckbox.checked) {
-            histogramCheckbox.checked = true;
-        }
-    });
-
-    listViewCheckbox.addEventListener("change", function () {
-        if (histogramCheckbox.checked) {
-            histogramCheckbox.checked = false;
-        }
-        if (!listViewCheckbox.checked) {
-            listViewCheckbox.checked = true;
-        }
     });
 
     let saveButton = document.getElementById("save");
@@ -112,7 +94,7 @@ function main() {
     cancelButton.addEventListener("click", function (event) {
         event.preventDefault();
         window.location.href = "/";
-    })
+    });
 }
 
 document.addEventListener("DOMContentLoaded", main);

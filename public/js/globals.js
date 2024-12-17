@@ -109,3 +109,78 @@ function getColour(id) {
 
     return colourPerId[id];
 }
+
+function showCalender(visible) {
+    calender = document.getElementById("calender");
+    container = document.getElementById("container");
+
+    if (visible) {
+        calender.style.display = 'grid';
+    }
+    else {
+        calender.style.display = 'none';
+    }
+}
+
+function showList(visible) {
+    list = document.getElementById("list");
+    if (visible) {
+        list.style.display = 'grid';
+    }
+    else {
+        list.style.display = 'none';
+    }
+}
+
+function showGraph(visible) {
+    graph = document.getElementById("graph");
+    if (visible) {
+        graph.style.display = 'grid';
+    }
+    else {
+        graph.style.display = 'none';
+    }
+}
+
+
+function selectorFunction(e) {
+    let selector = document.getElementById("options");
+    switch (selector.selectedIndex) {
+        case 0: // List
+            showCalender(false);
+            showList(true);
+            showGraph(false);
+            break;
+        case 1: // Calender
+            showCalender(true);
+            showList(false);
+            showGraph(false);
+            break;
+        case 2: // Graph
+            showCalender(false);
+            showList(false);
+            showGraph(true);
+            break;
+    }
+}
+
+
+document.getElementById("options").addEventListener("change", selectorFunction);
+document.addEventListener("DOMContentLoaded", e => {
+    let cookie = getCookie("analyseView");
+    let selector = document.getElementById("options");
+
+    switch (cookie) {
+        case "list":
+            selector.selectedIndex = 0;
+            break;
+        case "calender":
+            selector.selectedIndex = 1;
+            break;
+        case "histogram":
+            selector.selectedIndex = 2;
+            break;
+    }
+
+    selectorFunction(null);
+});
