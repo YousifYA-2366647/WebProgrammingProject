@@ -1,4 +1,4 @@
-import express from "express";
+import express, { query } from "express";
 import jwt from "jsonwebtoken";
 import multer from "multer";
 import path from "path";
@@ -33,11 +33,11 @@ entryRouter.post("/time-entry", upload.any(), checkEntryRequest(), express.json(
         const end = req.body.end;
         const description = req.body.description;
         let files = [];
-    
+
         for (const file of req.files) {
             files.push(file.path);
         }
-    
+
         const result = insertEntry(user.id, title, start, end, description, JSON.stringify(files));
 
         const entry = {
@@ -48,7 +48,7 @@ entryRouter.post("/time-entry", upload.any(), checkEntryRequest(), express.json(
             description: description,
             files: JSON.stringify(files)
         }
-        
+
         console.log(entry);
         console.log(user.boss);
 
@@ -57,11 +57,11 @@ entryRouter.post("/time-entry", upload.any(), checkEntryRequest(), express.json(
                 addNotification(user.id, parseInt(bossId), entry, user.name + " made a new time entry.", new Date().toLocaleString());
             })
         }
-    
+
         res.status(201).json({ message: "Entry submitted successfully" });
     }
     catch (err) {
-        res.status(400).json({error: err});
+        res.status(400).json({ error: err });
     }
 })
 
@@ -144,7 +144,19 @@ entryRouter.get("/get-amount-of-entries", (request, response) => {
 entryRouter.get("/export-list", async (request, response) => {
     try {
         const user = getUserFromToken(getCookies(request).token);
-        const timeEntries = getTimeEntries(user.id);
+        let timeEntries = [];
+
+        if (!request.query.id) {
+            timeEntries = getTimeEntries(user.id);
+        } else {
+            let employeeId = request.query.id;
+            if (!isEmployee(user.id, employeeId)) {
+                response.status(401).json({ error: "unauthorized" }).end();
+                return;
+            }
+            timeEntries = getTimeEntries(employeeId);
+        }
+
 
         timeEntries.sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
 
@@ -204,19 +216,19 @@ entryRouter.get("/get-amount-employee-entries", (request, response) => {
         const employeeId = request.query.id;
         const start = request.query.from;
         const end = request.query.to;
-    
+
         const user = getUserFromToken(getCookies(request).token);
-    
+
         if (!isEmployee(user.id, employeeId)) {
             response.status(401).json({ error: "unauthorized" }).end();
             return;
         }
-    
+
         const entries = getAmountOfEntries(employeeId, start, end);
         response.status(200).json(entries);
     }
     catch (err) {
-        response.status(400).json({error: err});
+        response.status(400).json({ error: err });
     }
 })
 

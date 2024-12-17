@@ -17,5 +17,5 @@ document.getElementById("exportButton").addEventListener('click', function() {
             document.body.appendChild(a);
             a.click();
             a.remove();
-        })
-})
+        });
+});

@@ -3,7 +3,7 @@ function getCookie(name) {
     for (let cookie of cookies) {
         cookie = cookie.trim();
         if (cookie.startsWith(name + '=')) {
-        return cookie.substring(name.length + 1);
+            return cookie.substring(name.length + 1);
         }
     }
     return null;
@@ -14,7 +14,7 @@ function createTableEntry(id, name, email) {
     let idlist = cookie ? JSON.parse(cookie) : [];
 
     let tableEntry = document.createElement("div");
-    tableEntry.id = name+id.toString();
+    tableEntry.id = name + id.toString();
     tableEntry.className = "tableEntry"
 
     let checkBoxDiv = document.createElement("div");
@@ -35,8 +35,6 @@ function createTableEntry(id, name, email) {
     idColumn.className = "idColumn";
     idColumn.textContent = id.toString();
 
-
-
     let nameColumn = document.createElement("p");
     nameColumn.id = "nameColumn" + id.toString();
     nameColumn.className = "nameColumn";
@@ -48,7 +46,7 @@ function createTableEntry(id, name, email) {
     emailColumn.textContent = email;
 
     let deleteButtonDiv = document.createElement("div");
-    deleteButtonDiv.className = "deleteButtonColumn";
+    deleteButtonDiv.className = "buttonColumn";
 
     let deleteBttn = document.createElement("button");
     deleteBttn.textContent = "Delete";
@@ -58,11 +56,23 @@ function createTableEntry(id, name, email) {
     })
     deleteButtonDiv.appendChild(deleteBttn);
 
+    let pdfButtonDiv = document.createElement("div");
+    pdfButtonDiv.className = "buttonColumn";
+
+    let pdfButton = document.createElement("button");
+    pdfButton.textContent = "Export";
+    pdfButton.className = "employeePDFButton";
+    pdfButton.addEventListener('click', e => {
+        downloadEmployeePDF(id);
+    })
+    pdfButtonDiv.appendChild(pdfButton);
+
     tableEntry.appendChild(checkBoxDiv);
     tableEntry.appendChild(idColumn);
     tableEntry.appendChild(nameColumn);
     tableEntry.appendChild(emailColumn);
     tableEntry.appendChild(deleteButtonDiv);
+    tableEntry.appendChild(pdfButtonDiv)
 
     return tableEntry;
 }
@@ -78,18 +88,18 @@ function addEmployee(event) {
     fetch("/add-employee", {
         method: "POST",
         headers: {
-        "Content-Type": "application/json"
+            "Content-Type": "application/json"
         },
         body: JSON.stringify(body)
     }).then(res => {
         if (res.status == 200) {
-        responseTxt.textContent = "request sent";
-        document.getElementById("emailInput").value = "";
+            responseTxt.textContent = "request sent";
+            document.getElementById("emailInput").value = "";
         } else {
-        responseTxt.textContent = res.statusText;
+            responseTxt.textContent = res.statusText;
         }
-        setTimeout(function() {
-        responseTxt.textContent = "";
+        setTimeout(function () {
+            responseTxt.textContent = "";
         }, 3000);
     });
 }
@@ -111,15 +121,15 @@ function deleteEmployee(id, name, email) {
     fetch("/remove-employee", {
         method: 'POST',
         headers: {
-        "Content-Type": "application/json"
+            "Content-Type": "application/json"
         },
         body: JSON.stringify({
-        email: email
+            email: email
         })
     }).then(res => {
         if (res.status == 200) {
-        location.reload();
-        return;
+            location.reload();
+            return;
         }
         window.alert(res.statusText);
     });
@@ -138,23 +148,44 @@ function selectEmployee(checked, id) {
     document.cookie = "selectedEmployees=" + JSON.stringify(idlist) + "; SameSite=Strict";
 }
 
+
+function downloadEmployeePDF(id) {
+    fetch("/export-list?id=" + id, {
+        method: "GET",
+    }).then((res) => {
+        if (res.status < 200 || res.status >= 300) {
+            window.alert(res.statusText);
+            return;
+        }
+        return res.blob();
+    }).then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'time_entries.pdf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    });
+}
+
 function listEmployees(event) {
     fetch("/get-employees", {
         method: 'get',
         headers: {
-        "Content-Type": "application/json"
+            "Content-Type": "application/json"
         }
     }).then(res => {
         if (res.status == 200) {
-        return res.json();
+            return res.json();
         }
         window.alert(res.statusText);
     }).then(json => {
         employeeTable = document.getElementById("employeeTable");
         for (employee of json.employees) {
-        if (employee) {
-            employeeTable.appendChild(createTableEntry(employee.id, employee.name, employee.email));
-        }
+            if (employee) {
+                employeeTable.appendChild(createTableEntry(employee.id, employee.name, employee.email));
+            }
         }
     });
 }
