@@ -6,7 +6,7 @@ import PDFDocument from "pdfkit";
 import { checkEntryRequest } from "../middleware/formChecking.js";
 import { getCookies, tokenKey } from "../middleware/authorization.js";
 import { insertEntry, getTimeEntries, getAmountOfEntries } from "../controllers/timeEntryController.js";
-import { getUserFromToken, getUsers } from "../controllers/userController.js";
+import { getEmployees, getUserFromToken, getUsers } from "../controllers/userController.js";
 import { getUserSettings } from "../controllers/settingsController.js";
 
 const entryRouter = express.Router();
@@ -97,14 +97,20 @@ entryRouter.get("/get-amount-of-entries", (request, response) => {
 })
 
 entryRouter.get("/get-employee-entries", (request, response) => {
-    const employeeId = getUsers("%", request.body.email).id;
+    const employee = getUsers("%", request.body.email);
     const start = request.body.start;
     const end = request.body.end;
 
     try {
-        const employeeEntries = getTimeEntries(employeeId, "%", start, end, "%");
-
-        response.status(200).json(employeeEntries);
+        const adminEmployees = getEmployees(getUserFromToken(getCookies(request).token).id);
+        if (adminEmployees.includes(employee)) {
+            const employeeEntries = getTimeEntries(employee.id, "%", start, end, "%");
+    
+            response.status(200).json(employeeEntries);
+        }
+        else {
+            throw new Error("user is not an employee of this admin.");
+        }
     }
     catch (err) {
         response.status(400).json({error: err});
