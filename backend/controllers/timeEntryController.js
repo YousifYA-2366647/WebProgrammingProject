@@ -13,12 +13,12 @@ export function getTimeEntries(userId, title = "%", start = "0000-01-01 00:00:00
         `).all(userId, title, end, start, description);
 };
 
-export function getTimeEntrieFromId(userId, entryId){
+export function getTimeEntrieFromId(entryId){
     return db.prepare(`
         SELECT *
         FROM time_entries
-        WHERE user_id = ? AND id = ?
-        `).get(userId, entryId);
+        WHERE id = ?
+        `).get(entryId);
 
 }
 

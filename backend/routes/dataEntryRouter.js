@@ -6,7 +6,7 @@ import PDFDocument from "pdfkit";
 import { checkEntryRequest } from "../middleware/formChecking.js";
 import { getCookies, tokenKey } from "../middleware/authorization.js";
 import { insertEntry, getTimeEntries, getAmountOfEntries, getTimeEntrieFromId } from "../controllers/timeEntryController.js";
-import { getUserFromToken, isEmployee } from "../controllers/userController.js";
+import { getEmployees, getUserFromToken, isEmployee } from "../controllers/userController.js";
 import { getUserSettings } from "../controllers/settingsController.js";
 import { addNotification } from "../controllers/notificationController.js";
 import zip from "express-zip"
@@ -112,16 +112,31 @@ entryRouter.get("/get-time-entries", (request, response) => {
 
 entryRouter.get("/download-files", (req, res) => {
     const user = getUserFromToken(getCookies(req).token);
-    let entry = getTimeEntrieFromId(user.id, req.query.id);
-    let files = JSON.parse(entry.files);
+    let entry = getTimeEntrieFromId(req.query.id);
 
+    // checken of permisie voor data
+    if (user.id != entry.user_id) {
+        let test = true;
+        for (let e of getEmployees(user.id)) {
+            if (e) {
+                if (e.id == entry.user_id) {
+                    test = false;
+                }
+            }
+        }
+        if (test) {
+            res.status(401).end();
+            return;
+        }
+    }
+
+    let files = JSON.parse(entry.files);
     if (files.length == 1) {
         res.download(path.join(process.cwd(), files[0]));
     } else {
         let zipFiles = [];
-
-        for(let file of files){
-            zipFiles.push({path: file, name:path.basename(file)});
+        for (let file of files) {
+            zipFiles.push({ path: file, name: path.basename(file) });
         }
 
         res.zip(zipFiles);
