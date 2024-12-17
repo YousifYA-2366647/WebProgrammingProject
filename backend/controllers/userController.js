@@ -5,13 +5,13 @@ import bcrypt from "bcrypt";
 
 export async function insertUser(username, email, password, employees) {
     const hashedPassword = await bcrypt.hash(password, 10);
-  
+
     const insertUser = db.prepare("INSERT INTO users (name, email, password, employees) VALUES (?, ?, ?, ?)")
     const result = insertUser.run(username, email, hashedPassword, employees);
     return result;
 };
 
-export function getUsers(username="%", email="%") {
+export function getUsers(username = "%", email = "%") {
     return db.prepare(`
         SELECT * 
         FROM users
@@ -51,6 +51,11 @@ export function getEmployees(userId) {
     })
 
     return listOfEmployees;
+}
+
+export function isEmployee(userId, employeeId) {
+    const employees = db.prepare("SELECT employees FROM users WHERE id = ?").get(userId).employees;
+    return employees.includes(employeeId);
 }
 
 export function removeEmployee(userId, employeeId) {

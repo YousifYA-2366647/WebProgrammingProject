@@ -1,7 +1,7 @@
 async function createList(event) {
     var entryList = document.getElementById("list-entry-list");
     var entries = [];
-    await getSelectedEmoloyeesEntries(entries);
+    await getSelectedEmployeesEntries(entries);
     await getOwnItems(entries);
 
     entries.sort((a, b) => { return a.start_time > b.start_time; }); // sort on start date
@@ -18,8 +18,6 @@ async function createList(event) {
         }
         entryList.appendChild(createLi(entry, colour));
     }
-
 }
-
 
 document.addEventListener("DOMContentLoaded", createList);

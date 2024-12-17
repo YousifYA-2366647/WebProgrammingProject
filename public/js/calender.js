@@ -74,7 +74,7 @@ async function dateClick(e) {
     entries = [];
     await getOwnItems(entries, "date=" + toURLdateString(selectedDate));
     let employeeQuery = "from=" + toURLdateString(selectedDate) + "T00:00:00&to=" + toURLdateString(selectedDate) + "T23:59:59";
-    await getSelectedEmoloyeesEntries(entries, employeeQuery);
+    await getSelectedEmployeesEntries(entries, employeeQuery);
 
     entries.sort((a, b) => { return a.start_time > b.start_time; }); // sort on start date
 

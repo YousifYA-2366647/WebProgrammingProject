@@ -70,6 +70,8 @@ app.get("/get-amount-of-entries", entryRouter);
 
 app.get("/get-employee-entries", entryRouter);
 
+app.get("/get-amount-employee-entries", entryRouter);
+
 app.get("/export-list", entryRouter);
 
 // notifications

@@ -6,8 +6,9 @@ import PDFDocument from "pdfkit";
 import { checkEntryRequest } from "../middleware/formChecking.js";
 import { getCookies, tokenKey } from "../middleware/authorization.js";
 import { insertEntry, getTimeEntries, getAmountOfEntries } from "../controllers/timeEntryController.js";
-import { getUserFromToken, getUsers } from "../controllers/userController.js";
+import { getUserFromToken, isEmployee } from "../controllers/userController.js";
 import { getUserSettings } from "../controllers/settingsController.js";
+
 
 const entryRouter = express.Router();
 const storage = multer.diskStorage({
@@ -85,6 +86,44 @@ entryRouter.get("/get-time-entries", (request, response) => {
     }
 });
 
+entryRouter.get("/get-amount-employee-entries", (request, response) => {
+    const employeeId = request.query.id;
+    const start = request.query.from;
+    const end = request.query.to;
+
+    const user = getUserFromToken(getCookies(request).token);
+
+    if (!isEmployee(user.id, employeeId)) {
+        response.status(401).json({ error: "unauthorized" }).end();
+        return;
+    }
+
+    const entries = getAmountOfEntries(employeeId, start, end);
+    response.status(200).json(entries);
+
+})
+
+entryRouter.get("/get-employee-entries", (request, response) => {
+    const employeeId = parseInt(request.query.id);
+    const start = request.query.start == null ? request.query.from : "0000-01-01 00:00:00";
+    const end = request.query.end == null ? request.query.to : "9999-12-31 23:59:59";
+
+    const user = getUserFromToken(getCookies(request).token);
+    if (!isEmployee(user.id, employeeId)) {
+        response.status(401).json({ error: "unauthorized" }).end();
+        return;
+    }
+
+    try {
+        const employeeEntries = getTimeEntries(employeeId, "%", start, end, "%");
+
+        response.status(200).json({ employeeEntries: employeeEntries });
+    }
+    catch (err) {
+        response.status(400).json({ error: err });
+    }
+})
+
 entryRouter.get("/get-amount-of-entries", (request, response) => {
     const start = request.query.from;
     const end = request.query.to;
@@ -109,7 +148,7 @@ entryRouter.get("/get-employee-entries", (request, response) => {
     catch (err) {
         response.status(400).json({ error: err });
     }
-})
+});
 
 entryRouter.get("/export-list", async (request, response) => {
     try {

@@ -58,7 +58,7 @@ async function getOwnItems(list, query = "") {
 }
 
 
-async function getSelectedEmoloyeesEntries(list, query = "") {
+async function getSelectedEmployeesEntries(list, query = "") {
     let cookie = getCookie("selectedEmployees");
     if (!cookie) {
         return;
